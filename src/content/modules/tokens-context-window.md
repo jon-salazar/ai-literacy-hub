@@ -65,6 +65,19 @@ completionMessage: >-
   Entender tokens e Context Window como recursos finitos é o que torna a
   próxima distinção — entre Prompt e Context — prática e não apenas
   conceitual.
+roleLenses:
+  dev:
+    - "Envie ao modelo apenas os arquivos e trechos relevantes para a tarefa, em vez do repositório inteiro."
+    - "Em conversas longas, recomece com um resumo do que importa quando a qualidade começar a cair."
+  qa:
+    - "Teste entradas longas: o que acontece quando o conteúdo se aproxima ou excede a janela de contexto?"
+    - "Ao reportar uma resposta ruim, registre o tamanho e a composição do contexto enviado; isso ajuda a separar problema de contexto de problema de modelo."
+  po:
+    - "Considere que mais tokens significam mais custo e mais latência; isso é uma decisão de produto, não só técnica."
+    - "Prefira funcionalidades que selecionam o conteúdo relevante a funcionalidades que 'mandam tudo' ao modelo."
+  tl:
+    - "Trate a janela de contexto como recurso finito na arquitetura: defina o que entra, em que ordem e o que fica de fora."
+    - "Acompanhe o tamanho do contexto como sinal de saúde: prompts que só crescem tendem a ficar poluídos."
 ---
 
 ## O que é um token

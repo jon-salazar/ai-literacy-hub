@@ -1,0 +1,107 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatRadarDate, getRadarItems, RADAR_TYPE_LABELS, type RadarEntry } from "../../lib/radar";
+import { withBase } from "../../lib/paths";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const items = await getRadarItems();
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: RadarEntry;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={`${data.title} — AI Radar`} description={data.summary}>
+  <header class="radar-item-header">
+    <div class="container-narrow">
+      <p class="radar-item-header__back"><a href={withBase("/radar")}>← Voltar ao AI Radar</a></p>
+      <p class="radar-item-header__meta">
+        <span>{RADAR_TYPE_LABELS[data.type]}</span>
+        <time datetime={data.date.toISOString().slice(0, 10)}>{formatRadarDate(data.date)}</time>
+      </p>
+      <h1>{data.title}</h1>
+      <p class="radar-item-header__summary">{data.summary}</p>
+      {
+        data.example && (
+          <p class="radar-item-header__example" role="note">
+            <strong>Item de exemplo:</strong> este conteúdo ilustra o formato do Radar e não é um relato de evento
+            específico.
+          </p>
+        )
+      }
+    </div>
+  </header>
+
+  <article class="radar-item">
+    <div class="container-narrow">
+      <Content />
+      {
+        data.tags.length > 0 && (
+          <p class="radar-item__tags">
+            Tags: {data.tags.map((tag) => `#${tag}`).join(" ")}
+          </p>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .radar-item-header {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .radar-item-header__back {
+    margin: 0 0 var(--space-4);
+  }
+
+  .radar-item-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .radar-item-header__summary {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+  }
+
+  .radar-item-header__example {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-sm);
+  }
+
+  .radar-item {
+    padding-block: var(--space-8);
+  }
+
+  .radar-item :global(h2) {
+    font-size: var(--font-size-xl);
+    margin-block: var(--space-6) var(--space-2);
+  }
+
+  .radar-item :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .radar-item__tags {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+</style>

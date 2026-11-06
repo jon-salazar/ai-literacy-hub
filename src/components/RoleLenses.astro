@@ -1,0 +1,111 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type RoleLenses = NonNullable<CollectionEntry<"modules">["data"]["roleLenses"]>;
+type RoleKey = keyof RoleLenses;
+
+interface Props {
+  lenses: RoleLenses;
+}
+
+const ROLE_LABELS: Record<RoleKey, string> = {
+  dev: "Dev",
+  qa: "QA",
+  po: "PO",
+  tl: "Tech Lead",
+};
+const ROLE_ORDER: RoleKey[] = ["dev", "qa", "po", "tl"];
+
+const { lenses } = Astro.props;
+const roles = ROLE_ORDER.flatMap((key) => {
+  const tips = lenses[key];
+  return tips && tips.length > 0 ? [{ key, label: ROLE_LABELS[key], tips }] : [];
+});
+---
+
+{
+  roles.length > 0 && (
+    <div class="role-lenses">
+      {roles.map((role) => (
+        <details class="role-lenses__item" data-role={role.key}>
+          <summary class="role-lenses__summary">
+            <span class="role-lenses__label">Para quem atua como {role.label}</span>
+            <span class="role-lenses__count">
+              {role.tips.length} {role.tips.length === 1 ? "dica" : "dicas"}
+            </span>
+          </summary>
+          <ul class="role-lenses__tips">
+            {role.tips.map((tip) => (
+              <li>{tip}</li>
+            ))}
+          </ul>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .role-lenses {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .role-lenses__item {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .role-lenses__item[open] {
+    border-color: var(--color-primary);
+  }
+
+  .role-lenses__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    list-style: none;
+  }
+
+  .role-lenses__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .role-lenses__summary::before {
+    content: "▸";
+    margin-right: var(--space-2);
+    display: inline-block;
+  }
+
+  .role-lenses__item[open] > .role-lenses__summary::before {
+    content: "▾";
+  }
+
+  .role-lenses__label {
+    flex: 1;
+  }
+
+  .role-lenses__summary:hover .role-lenses__label {
+    color: var(--color-primary);
+  }
+
+  .role-lenses__count {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+  }
+
+  .role-lenses__tips {
+    margin: 0;
+    padding: 0 var(--space-4) var(--space-4) calc(var(--space-4) + var(--space-6));
+    display: grid;
+    gap: var(--space-2);
+  }
+</style>
