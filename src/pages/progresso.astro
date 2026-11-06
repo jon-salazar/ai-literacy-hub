@@ -1,5 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgressTools from "../components/ProgressTools.astro";
+import { formatMaturityScore, getMaturityData, MATURITY_SCORE_MAX, MATURITY_SCORE_MIN } from "../lib/maturity";
+
+const maturity = getMaturityData();
+const updatedAtLabel = new Date(maturity.updatedAt).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 ---
 
 <BaseLayout title="Meu progresso">
@@ -15,71 +20,108 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <p>Carregando progresso...</p>
       </div>
 
-      <h2>Maturity Map (conceitual)</h2>
-      <p>
-        Esta seção ilustra, com <strong>dados demonstrativos</strong> (não coletados de participantes reais), como os
-        sinais capturados pelos formulários de baseline, evidência e reflexão alimentariam futuramente um mapa de
-        maturidade por competência.
-      </p>
-      <div class="demo-data-badge">Dados demonstrativos</div>
+      <ProgressTools />
+
+      <h2>Maturity Map{maturity.demo ? " (conceitual)" : ""}</h2>
+      {
+        maturity.demo ? (
+          <>
+            <p>
+              Esta seção ilustra, com <strong>dados demonstrativos</strong> (não coletados de participantes reais),
+              como os sinais capturados pelos formulários de baseline, evidência e reflexão alimentariam futuramente um
+              mapa de maturidade por competência.
+            </p>
+            <div class="demo-data-badge">Dados demonstrativos</div>
+          </>
+        ) : (
+          <p>Maturidade agregada por competência, a partir dos sinais registrados nos formulários.</p>
+        )
+      }
       <table class="maturity-table">
-        <caption class="visually-hidden">Exemplo demonstrativo de maturidade por competência</caption>
+        <caption class="visually-hidden">
+          {maturity.demo ? "Exemplo demonstrativo de maturidade por competência" : "Maturidade por competência"}
+        </caption>
         <thead>
           <tr>
             <th scope="col">Competência</th>
-            <th scope="col">Maturidade (1–5)</th>
+            <th scope="col">Maturidade ({MATURITY_SCORE_MIN}–{MATURITY_SCORE_MAX})</th>
           </tr>
         </thead>
         <tbody>
-          <tr><th scope="row">Context Engineering</th><td>4.1</td></tr>
-          <tr><th scope="row">Agents</th><td>3.0</td></tr>
-          <tr><th scope="row">Evals</th><td>1.7</td></tr>
-          <tr><th scope="row">SDD</th><td>2.2</td></tr>
+          {
+            maturity.competencies.map((competency) => (
+              <tr>
+                <th scope="row">{competency.label}</th>
+                <td>{formatMaturityScore(competency.score)}</td>
+              </tr>
+            ))
+          }
         </tbody>
       </table>
+      {
+        maturity.nextIntervention && (
+          <p class="maturity-table__note">
+            Próxima intervenção sugerida{maturity.demo ? " (exemplo)" : ""}: <strong>{maturity.nextIntervention}</strong>.
+          </p>
+        )
+      }
       <p class="maturity-table__note">
-        Próxima intervenção sugerida (exemplo): <strong>Dojo — Constraints &amp; Guardrails na prática</strong>.
+        Atualizado em <time datetime={maturity.updatedAt}>{updatedAtLabel}</time>.
       </p>
     </div>
   </section>
 </BaseLayout>
 
 <script>
-  import { getProgress } from "../lib/progress";
+  import { PROGRESS_CHANGED_EVENT, getProgress } from "../lib/progress";
 
-  const container = document.querySelector<HTMLElement>("[data-progress-summary]");
-  if (container) {
+  function appendLabeled(container: HTMLElement, parts: Array<[string, string]>): void {
+    const paragraph = document.createElement("p");
+    parts.forEach(([label, value], index) => {
+      if (index > 0) paragraph.append(" · ");
+      const strong = document.createElement("strong");
+      strong.textContent = `${label}:`;
+      paragraph.append(strong, ` ${value}`);
+    });
+    container.appendChild(paragraph);
+  }
+
+  function renderSummary(container: HTMLElement): void {
     const progress = getProgress();
     if (!progress) {
       container.textContent = "Não foi possível acessar o armazenamento local deste navegador.";
-    } else {
-      const entries = Object.entries(progress.modules);
-      const completed = entries.filter(([, m]) => m.completedAt).length;
-      container.innerHTML = "";
-
-      const idEl = document.createElement("p");
-      idEl.innerHTML = `<strong>Participant ID:</strong> ${progress.participantId}`;
-      container.appendChild(idEl);
-
-      const summaryEl = document.createElement("p");
-      summaryEl.innerHTML = `<strong>Módulos iniciados:</strong> ${entries.length} · <strong>Concluídos:</strong> ${completed}`;
-      container.appendChild(summaryEl);
-
-      if (entries.length === 0) {
-        const empty = document.createElement("p");
-        empty.textContent = "Você ainda não iniciou nenhum módulo.";
-        container.appendChild(empty);
-      } else {
-        const list = document.createElement("ul");
-        for (const [moduleId, moduleProgress] of entries) {
-          const item = document.createElement("li");
-          const status = moduleProgress.completedAt ? "Concluído" : "Em andamento";
-          item.textContent = `${moduleId} — ${status}`;
-          list.appendChild(item);
-        }
-        container.appendChild(list);
-      }
+      return;
     }
+    const entries = Object.entries(progress.modules);
+    const completed = entries.filter(([, m]) => m.completedAt).length;
+    container.replaceChildren();
+
+    appendLabeled(container, [["Participant ID", progress.participantId]]);
+    appendLabeled(container, [
+      ["Módulos iniciados", String(entries.length)],
+      ["Concluídos", String(completed)],
+    ]);
+
+    if (entries.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Você ainda não iniciou nenhum módulo.";
+      container.appendChild(empty);
+      return;
+    }
+    const list = document.createElement("ul");
+    for (const [moduleId, moduleProgress] of entries) {
+      const item = document.createElement("li");
+      const status = moduleProgress.completedAt ? "Concluído" : "Em andamento";
+      item.textContent = `${moduleId} — ${status}`;
+      list.appendChild(item);
+    }
+    container.appendChild(list);
+  }
+
+  const container = document.querySelector<HTMLElement>("[data-progress-summary]");
+  if (container) {
+    renderSummary(container);
+    document.addEventListener(PROGRESS_CHANGED_EVENT, () => renderSummary(container));
   }
 </script>
 
