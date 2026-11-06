@@ -8,6 +8,13 @@ updates:
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      # @types/node acompanha o Node 22 usado no CI e no deploy.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # @astrojs/check ainda exige typescript ^5 || ^6 (peer dependency).
+      - dependency-name: typescript
+        versions: [">=7"]
 
   - package-ecosystem: github-actions
     directory: /
