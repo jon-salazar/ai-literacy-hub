@@ -657,8 +657,12 @@
 <script>
   // Configuração da URL da POC real, usada pelo CTA do slide de demo.
   // Deixe pocUrl como "" para esconder o botão caso a POC não esteja acessível.
+  // Publicada no site (/<base>/apresentacao/), a apresentação aponta para o próprio Hub ("../").
+  // Aberta offline (file://), cai no servidor local padrão do Astro.
   const PRESENTATION_CONFIG = {
-    pocUrl: "http://localhost:4321",
+    pocUrl: /^https?:$/.test(window.location.protocol)
+      ? new URL("../", window.location.href).href
+      : "http://localhost:4321/ai-literacy-hub/",
   };
 
   (function () {

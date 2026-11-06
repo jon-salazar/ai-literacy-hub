@@ -6,10 +6,22 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  /** Pages that must not be indexed (e.g. 404) skip canonical/og:url and set noindex. */
+  noindex?: boolean;
 }
 
-const { title, description = "AI Literacy Hub — letramento em IA para o ciclo de desenvolvimento de software." } =
-  Astro.props;
+const SITE_NAME = "AI Literacy Hub";
+const DEFAULT_DESCRIPTION = "AI Literacy Hub — letramento em IA para o ciclo de desenvolvimento de software.";
+const SHARE_IMAGE_PATH = "/og-image.png";
+const SHARE_IMAGE_ALT = "AI Literacy Hub — Entenda → Delegue → Projete";
+const THEME_COLOR = "#0f1115";
+
+const { title, description = DEFAULT_DESCRIPTION, noindex = false } = Astro.props;
+
+const fullTitle = `${title} · ${SITE_NAME}`;
+// Astro.url.pathname already includes the base; Astro.site supplies the origin.
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const shareImageUrl = Astro.site ? new URL(withBase(SHARE_IMAGE_PATH), Astro.site).href : withBase(SHARE_IMAGE_PATH);
 ---
 
 <!doctype html>
@@ -18,9 +30,29 @@ const { title, description = "AI Literacy Hub — letramento em IA para o ciclo 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content={THEME_COLOR} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <link rel="icon" href={withBase("/favicon.ico")} sizes="32x32" />
-    <title>{title} · AI Literacy Hub</title>
+    <title>{fullTitle}</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {!noindex && canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={shareImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={SHARE_IMAGE_ALT} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImageUrl} />
+    <meta name="twitter:image:alt" content={SHARE_IMAGE_ALT} />
   </head>
   <body>
     <a class="visually-hidden" href="#main-content">Pular para o conteúdo principal</a>
