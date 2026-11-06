@@ -1,22 +1,24 @@
 ---
+import { isSamePath, withBase } from "../lib/paths";
+
 const navItems = [
-  { href: "/", label: "Início" },
-  { href: "/fases/foundations", label: "Currículo" },
-  { href: "/progresso", label: "Meu progresso" },
-  { href: "/sobre", label: "Como funciona" },
+  { href: withBase("/"), label: "Início" },
+  { href: withBase("/fases/foundations"), label: "Currículo" },
+  { href: withBase("/progresso"), label: "Meu progresso" },
+  { href: withBase("/sobre"), label: "Como funciona" },
 ];
 const currentPath = Astro.url.pathname;
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="site-header__brand" href="/">AI Literacy Hub</a>
+    <a class="site-header__brand" href={withBase("/")}>AI Literacy Hub</a>
     <nav aria-label="Navegação principal">
       <ul class="site-header__nav">
         {
           navItems.map((item) => (
             <li>
-              <a href={item.href} aria-current={currentPath === item.href ? "page" : undefined}>
+              <a href={item.href} aria-current={isSamePath(currentPath, item.href) ? "page" : undefined}>
                 {item.label}
               </a>
             </li>

@@ -1,6 +1,7 @@
 ---
 import StatusBadge from "./StatusBadge.astro";
 import type { ModuleEntry } from "../lib/modules";
+import { withBase } from "../lib/paths";
 
 interface Props {
   module: ModuleEntry;
@@ -13,7 +14,7 @@ const isAvailable = data.status === "published";
 
 {
   isAvailable ? (
-    <a class="module-card module-card--available" href={`/modulos/${data.slug}`} data-module-id={data.id}>
+    <a class="module-card module-card--available" href={withBase(`/modulos/${data.slug}`)} data-module-id={data.id}>
       <div class="module-card__header">
         <h3 class="module-card__title">{data.title}</h3>
         <StatusBadge status={data.status} />

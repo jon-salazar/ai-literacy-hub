@@ -48,7 +48,7 @@ npm install
 npm run dev
 ```
 
-Abre em `http://localhost:4321`.
+Abre em `http://localhost:4321/ai-literacy-hub/` (o `base` configurado para o GitHub Pages também vale em desenvolvimento).
 
 ## Build de produção
 
@@ -77,6 +77,7 @@ src/
   lib/
     progress.ts          # único ponto de acesso a localStorage
     forms.ts             # construção pura de URL de Form com prefill
+    paths.ts             # withBase(): prefixa links internos com o base do deploy
     curriculum.ts         # leitura tipada de curriculum.json
     modules.ts            # leitura tipada da collection de módulos
   components/            # componentes genéricos de apresentação
@@ -125,6 +126,14 @@ Não é necessário criar nenhuma página Astro nem editar componentes.
 ## Como adicionar uma fase
 
 Adicione um objeto em `src/data/phases` dentro de `src/data/curriculum.json` (`id`, `order`, `title`, `description`, `transformation`, `status`). A rota `/fases/<id>` é gerada automaticamente; módulos futuros que referenciarem esse `phase` id aparecerão nela sem mudanças de código.
+
+## Publicação (GitHub Pages)
+
+O site é publicado em `https://jon-salazar.github.io/ai-literacy-hub/` pelo workflow [.github/workflows/deploy.yml](.github/workflows/deploy.yml), a cada push na `main` (ou manualmente em Actions → "Deploy to GitHub Pages"). O workflow roda `npm test` e `npm run build` (com `astro check`) antes de publicar; se algo falhar, nada é publicado.
+
+Configuração necessária no repositório (uma vez): **Settings → Pages → Source: GitHub Actions**.
+
+Como é um *project site*, o Hub vive no subcaminho `/ai-literacy-hub/` (`base` em `astro.config.mjs`). Por isso, **todo link interno deve usar `withBase()`** de `src/lib/paths.ts` — nunca `href="/..."` literal. Para publicar em outro endereço (domínio próprio, outro repo), ajuste `site` e `base` em `astro.config.mjs`.
 
 ## Limitações da POC
 

@@ -1,6 +1,7 @@
 ---
 import StatusBadge from "./StatusBadge.astro";
 import type { Phase } from "../lib/curriculum";
+import { withBase } from "../lib/paths";
 
 interface Props {
   phase: Phase;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { phase, moduleCount } = Astro.props;
-const href = `/fases/${phase.id}`;
+const href = withBase(`/fases/${phase.id}`);
 ---
 
 <a class="phase-card" href={href}>
