@@ -1,13 +1,28 @@
 ---
 import { isSamePath, withBase } from "../lib/paths";
 
-const navItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  /** Também marca como ativo em subpáginas (ex.: /radar/<item>). */
+  matchSubpaths?: boolean;
+}
+
+const navItems: NavItem[] = [
   { href: withBase("/"), label: "Início" },
   { href: withBase("/fases/foundations"), label: "Currículo" },
+  { href: withBase("/radar"), label: "AI Radar", matchSubpaths: true },
   { href: withBase("/progresso"), label: "Meu progresso" },
   { href: withBase("/sobre"), label: "Como funciona" },
 ];
 const currentPath = Astro.url.pathname;
+
+/** "page" na própria página do item; "true" em subpáginas da seção (ex.: um item do radar). */
+function currentState(item: NavItem): "page" | "true" | undefined {
+  if (isSamePath(currentPath, item.href)) return "page";
+  const isSubpath = currentPath.startsWith(`${item.href.replace(/\/+$/, "")}/`);
+  return item.matchSubpaths === true && isSubpath ? "true" : undefined;
+}
 ---
 
 <header class="site-header">
@@ -18,7 +33,7 @@ const currentPath = Astro.url.pathname;
         {
           navItems.map((item) => (
             <li>
-              <a href={item.href} aria-current={isSamePath(currentPath, item.href) ? "page" : undefined}>
+              <a href={item.href} aria-current={currentState(item)}>
                 {item.label}
               </a>
             </li>
@@ -67,7 +82,13 @@ const currentPath = Astro.url.pathname;
   }
 
   .site-header__nav a:hover,
-  .site-header__nav a[aria-current="page"] {
+  .site-header__nav a[aria-current] {
     color: var(--color-primary);
+  }
+
+  .site-header__nav a[aria-current] {
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+    text-decoration-thickness: 2px;
   }
 </style>

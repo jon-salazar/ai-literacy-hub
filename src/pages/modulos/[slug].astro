@@ -7,6 +7,7 @@ import FormEmbed from "../../components/FormEmbed.astro";
 import ModuleNavigation from "../../components/ModuleNavigation.astro";
 import ModuleCompletionButton from "../../components/ModuleCompletionButton.astro";
 import StatusBadge from "../../components/StatusBadge.astro";
+import RoleLenses from "../../components/RoleLenses.astro";
 import { getAllModules } from "../../lib/modules";
 import { getPhase } from "../../lib/curriculum";
 import { getFormConfig } from "../../lib/forms";
@@ -74,6 +75,15 @@ const reflectionForm = getFormConfig(formsKey, "reflection");
           </div>
         </div>
         <p>{data.demo.explanation}</p>
+      </LearningSection>
+    )
+  }
+
+  {
+    data.roleLenses && (
+      <LearningSection id="na-sua-funcao" title="Na sua função" eyebrow="Lentes por papel">
+        <p>Como este conceito aparece no dia a dia de cada papel. Abra a lente da sua função — ou explore as outras.</p>
+        <RoleLenses lenses={data.roleLenses} />
       </LearningSection>
     )
   }

@@ -64,6 +64,19 @@ completionMessage: >-
   Agora que você sabe onde um LLM se encaixa, o próximo passo é entender como
   ele efetivamente funciona por dentro — o que explica por que ele às vezes
   erra de formas muito específicas.
+roleLenses:
+  dev:
+    - "Antes de propor um LLM para uma feature, pergunte se uma regra determinística ou um modelo de ML clássico resolveria com mais previsibilidade."
+    - "Nomeie com precisão o que você está usando (LLM, modelo de classificação, motor de regras) em PRs e discussões técnicas."
+  qa:
+    - "Ao testar uma funcionalidade 'com IA', descubra primeiro qual tecnologia está por trás: isso define se o comportamento esperado é determinístico ou probabilístico."
+    - "Inclua cenários em que um LLM claramente não é a ferramenta certa (cálculos exatos, regras fixas) para checar se o produto não depende dele ali."
+  po:
+    - "Descreva o problema do usuário antes de pedir 'uma solução com IA'; deixe a escolha da tecnologia para a conversa com o time."
+    - "Use a hierarquia IA → ML → GenAI → LLM para alinhar expectativas com stakeholders sobre o que a funcionalidade consegue ou não fazer."
+  tl:
+    - "Crie um vocabulário comum no time: diferenciar IA, ML, GenAI e LLM evita decisões de arquitetura baseadas em termos vagos."
+    - "Em revisões de design, pergunte explicitamente por que um LLM é a ferramenta certa para aquela tarefa."
 ---
 
 ## Inteligência Artificial

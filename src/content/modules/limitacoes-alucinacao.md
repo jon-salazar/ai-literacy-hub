@@ -60,6 +60,19 @@ completionMessage: >-
   Alucinação é um dos vários riscos ao trabalhar com IA. O próximo módulo,
   Segurança, trata de outros riscos importantes — vazamento de dados
   sensíveis e prompt injection.
+roleLenses:
+  dev:
+    - "Desconfie de APIs, bibliotecas ou parâmetros sugeridos que você não conhece: confirme na documentação antes de usar."
+    - "Rode testes e build antes de aceitar código gerado; erros fluentes passam fácil numa leitura rápida."
+  qa:
+    - "Inclua cenários que induzem alucinação: perguntas sobre fatos inexistentes ou informações fora das fontes disponíveis."
+    - "Registre respostas alucinadas como defeitos com exemplos reproduzíveis, incluindo o contexto enviado."
+  po:
+    - "Avalie o impacto de uma resposta errada em cada funcionalidade e defina onde a verificação humana é obrigatória."
+    - "Trate viés e desatualização como riscos de produto distintos de alucinação, cada um com sua mitigação."
+  tl:
+    - "Crie o hábito de verificação no time: pedir fontes, conferir com grounding e revisar antes de confiar."
+    - "Inclua modos de falha de LLM na análise de risco de novas funcionalidades."
 ---
 
 ## O que é alucinação

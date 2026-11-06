@@ -1,6 +1,6 @@
 ---
 import type { FormConfig } from "../lib/forms";
-import { isFormConfigured } from "../lib/forms";
+import { formDataAttributes, isFormConfigured } from "../lib/forms";
 import ExternalFormCTA from "./ExternalFormCTA.astro";
 
 interface Props {
@@ -11,7 +11,17 @@ interface Props {
 const { config, title } = Astro.props;
 const configured = isFormConfigured(config);
 const shouldEmbed = configured && config!.embed;
+const privacyId = configured ? `form-privacy-${config!.moduleId}-${config!.kind}` : undefined;
 ---
+
+{
+  configured && (
+    <p class="form-privacy" id={privacyId}>
+      <strong>Privacidade (LGPD):</strong> não inclua dados pessoais, de clientes ou informações confidenciais nas
+      respostas. O formulário recebe apenas seu identificador pseudônimo e o id do módulo.
+    </p>
+  )
+}
 
 {
   shouldEmbed ? (
@@ -19,17 +29,25 @@ const shouldEmbed = configured && config!.embed;
       <iframe
         title={title}
         data-form-embed
-        data-form-url={config!.url}
-        data-form-prefill-field={config!.prefillParticipantIdField ?? ""}
+        aria-describedby={privacyId}
         loading="lazy"
+        {...formDataAttributes(config!)}
       />
     </div>
   ) : (
-    <ExternalFormCTA config={config} label={title} />
+    <ExternalFormCTA config={config} label={title} describedBy={privacyId} />
   )
 }
 
 <style>
+  .form-privacy {
+    margin: 0 0 var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-left: 4px solid var(--color-warning);
+    background: var(--color-surface);
+    font-size: var(--font-size-sm);
+  }
+
   .form-embed {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -46,13 +64,10 @@ const shouldEmbed = configured && config!.embed;
 
 <script>
   import { getOrCreateParticipantId } from "../lib/progress";
-  import { buildFormUrl } from "../lib/forms";
+  import { buildFormUrl, formUrlInputFromDataset } from "../lib/forms";
 
-  document.querySelectorAll<HTMLIFrameElement>("[data-form-embed]").forEach((iframe) => {
-    const participantId = getOrCreateParticipantId();
-    const url = iframe.dataset.formUrl;
-    const field = iframe.dataset.formPrefillField;
-    if (!url) return;
-    iframe.src = buildFormUrl({ url, embed: true, prefillParticipantIdField: field || undefined }, participantId);
+  document.querySelectorAll<HTMLIFrameElement>("iframe[data-form-embed]").forEach((iframe) => {
+    const url = buildFormUrl(formUrlInputFromDataset(iframe.dataset), getOrCreateParticipantId());
+    if (url) iframe.src = url;
   });
 </script>

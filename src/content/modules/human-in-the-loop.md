@@ -65,6 +65,19 @@ completionMessage: >-
   responsabilidade humana) são a base sobre a qual a Fase 2, Agentic AI &
   Orquestração, vai construir — quando esses mesmos modelos passam a executar
   trabalho de forma mais autônoma através de agentes e workflows.
+roleLenses:
+  dev:
+    - "Exija confirmação humana antes de ações irreversíveis executadas por agentes, como apagar dados ou publicar alterações."
+    - "Revise o diff gerado por IA como revisaria o de um colega: você continua responsável pelo que entra no código."
+  qa:
+    - "Verifique se os checkpoints humanos existem onde o risco é alto e se não podem ser contornados."
+    - "Teste o fluxo de rejeição: o que acontece quando a pessoa revisora nega a ação proposta?"
+  po:
+    - "Classifique as ações da funcionalidade por risco e reversibilidade para decidir onde exigir aprovação humana."
+    - "Deixe claro para usuários quando uma ação foi sugerida pela IA e quando foi confirmada por uma pessoa."
+  tl:
+    - "Defina níveis de autonomia por tipo de ação, proporcionais ao risco e à reversibilidade."
+    - "Reforce que a responsabilidade final por ações automatizadas continua sendo humana, e deixe explícito de quem."
 ---
 
 ## O espectro de autonomia

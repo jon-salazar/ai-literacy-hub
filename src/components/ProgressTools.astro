@@ -1,0 +1,217 @@
+---
+/**
+ * Export, import and reset of the local progress. All logic lives in
+ * src/lib/progress.ts; this component only wires DOM events to it.
+ */
+---
+
+<section class="progress-tools" aria-labelledby="progress-tools-title" data-progress-tools>
+  <h2 id="progress-tools-title">Guardar ou transferir progresso</h2>
+  <p class="progress-tools__help">
+    Exporte um arquivo <code>.json</code> para guardar uma cópia ou levar seu progresso para outro navegador. Ao
+    importar, o progresso do arquivo é <strong>mesclado</strong> ao deste navegador; o Participant ID atual é mantido.
+  </p>
+
+  <div class="progress-tools__actions">
+    <button type="button" class="button" data-progress-export>Exportar progresso</button>
+
+    <div class="progress-tools__import">
+      <label for="progress-import-file" class="progress-tools__label">Importar progresso (arquivo .json)</label>
+      <input
+        id="progress-import-file"
+        type="file"
+        accept=".json,application/json"
+        aria-describedby="progress-tools-status"
+        data-progress-import
+      />
+    </div>
+
+    <button type="button" class="button button-secondary progress-tools__reset" data-progress-reset-open>
+      Recomeçar
+    </button>
+  </div>
+
+  <p id="progress-tools-status" class="progress-tools__status" role="status" aria-live="polite" data-progress-status>
+  </p>
+
+  <dialog class="progress-tools__dialog" aria-labelledby="progress-reset-title" data-progress-reset-dialog>
+    <form method="dialog">
+      <h3 id="progress-reset-title">Recomeçar do zero?</h3>
+      <p>
+        Isto apaga todos os módulos iniciados e concluídos neste navegador e gera um <strong>novo Participant ID</strong>.
+        Não é possível desfazer. Se quiser guardar uma cópia, exporte o progresso antes.
+      </p>
+      <div class="progress-tools__dialog-actions">
+        <button type="submit" value="cancel" class="button button-secondary" autofocus>Cancelar</button>
+        <button type="submit" value="confirm" class="button progress-tools__danger">Sim, apagar meu progresso</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+
+<script>
+  import {
+    PROGRESS_CHANGED_EVENT,
+    exportFileName,
+    exportProgress,
+    importProgress,
+    resetProgress,
+  } from "../lib/progress";
+
+  type StatusKind = "success" | "error";
+
+  const root = document.querySelector<HTMLElement>("[data-progress-tools]");
+  const exportButton = root?.querySelector<HTMLButtonElement>("[data-progress-export]");
+  const importInput = root?.querySelector<HTMLInputElement>("[data-progress-import]");
+  const resetButton = root?.querySelector<HTMLButtonElement>("[data-progress-reset-open]");
+  const dialog = root?.querySelector<HTMLDialogElement>("[data-progress-reset-dialog]");
+  const status = root?.querySelector<HTMLElement>("[data-progress-status]");
+
+  function showStatus(kind: StatusKind, message: string): void {
+    if (!status) return;
+    // The prefix conveys the outcome without relying on color.
+    status.textContent = `${kind === "success" ? "✔ Sucesso:" : "✖ Erro:"} ${message}`;
+    status.dataset.kind = kind;
+  }
+
+  function notifyChanged(): void {
+    document.dispatchEvent(new CustomEvent(PROGRESS_CHANGED_EVENT));
+  }
+
+  function moduleCountLabel(count: number): string {
+    return count === 1 ? "1 módulo" : `${count} módulos`;
+  }
+
+  exportButton?.addEventListener("click", () => {
+    const now = new Date();
+    const data = exportProgress(undefined, now);
+    if (!data) {
+      showStatus("error", "Não foi possível acessar o armazenamento local deste navegador.");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = exportFileName(now);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    showStatus("success", `arquivo ${link.download} gerado com ${moduleCountLabel(Object.keys(data.progress.modules).length)}.`);
+  });
+
+  importInput?.addEventListener("change", async () => {
+    const file = importInput.files?.[0];
+    if (!file) return;
+    try {
+      const result = importProgress(await file.text());
+      if (result.ok) {
+        const count = result.importedModules;
+        const verb = count === 1 ? "importado e mesclado" : "importados e mesclados";
+        showStatus("success", `${moduleCountLabel(count)} ${verb} ao seu progresso.`);
+        notifyChanged();
+      } else {
+        showStatus("error", `${result.error} Seu progresso atual não foi alterado.`);
+      }
+    } catch {
+      showStatus("error", "Não foi possível ler o arquivo. Seu progresso atual não foi alterado.");
+    } finally {
+      // Allow re-selecting the same file.
+      importInput.value = "";
+    }
+  });
+
+  resetButton?.addEventListener("click", () => {
+    dialog?.showModal();
+  });
+
+  dialog?.addEventListener("close", () => {
+    if (dialog.returnValue === "confirm") {
+      if (resetProgress()) {
+        showStatus("success", "progresso apagado. Um novo Participant ID foi gerado.");
+        notifyChanged();
+      } else {
+        showStatus("error", "Não foi possível acessar o armazenamento local deste navegador.");
+      }
+    }
+    dialog.returnValue = "";
+    resetButton?.focus();
+  });
+</script>
+
+<style>
+  .progress-tools {
+    margin-block: var(--space-8);
+  }
+
+  .progress-tools__help {
+    color: var(--color-text-muted);
+  }
+
+  .progress-tools__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-4);
+  }
+
+  .progress-tools__import {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .progress-tools__label {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+  }
+
+  .progress-tools__import input {
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--font-size-sm);
+  }
+
+  .progress-tools__status {
+    min-height: 1.6em;
+    margin-top: var(--space-4);
+    font-weight: 600;
+  }
+
+  .progress-tools__status[data-kind="success"] {
+    color: var(--color-success);
+  }
+
+  .progress-tools__status[data-kind="error"] {
+    color: var(--color-danger);
+  }
+
+  .progress-tools__dialog {
+    max-width: min(32rem, calc(100vw - 2 * var(--space-4)));
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+  }
+
+  .progress-tools__dialog::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+
+  .progress-tools__dialog h3 {
+    margin-top: 0;
+  }
+
+  .progress-tools__dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-3);
+  }
+
+  .button.progress-tools__danger {
+    background: var(--color-danger);
+  }
+</style>

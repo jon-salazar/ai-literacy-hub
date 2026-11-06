@@ -63,6 +63,19 @@ completionMessage: >-
   Entender esses riscos prepara o terreno para o último módulo desta fase:
   Human-in-the-loop, que trata de quando e como manter uma pessoa no controle
   das decisões e ações de um sistema de IA.
+roleLenses:
+  dev:
+    - "Não cole segredos, credenciais ou dados pessoais em ferramentas de IA; substitua por valores fictícios."
+    - "Trate conteúdo externo (páginas, documentos, issues) lido pelo modelo como dado, nunca como instrução."
+  qa:
+    - "Teste prompt injection: insira instruções maliciosas em entradas e documentos e verifique se o sistema as ignora."
+    - "Verifique se dados sensíveis não aparecem em respostas, logs ou mensagens de erro."
+  po:
+    - "Inclua requisitos de segurança e privacidade nas histórias desde o início, não como ajuste posterior."
+    - "Defina claramente quais dados a funcionalidade de IA pode acessar e quais nunca deve acessar."
+  tl:
+    - "Aplique o princípio do menor privilégio a tools e agentes: só o acesso necessário para a tarefa."
+    - "Estabeleça uma política do time sobre quais dados podem ser enviados a quais ferramentas de IA."
 ---
 
 ## Dados sensíveis

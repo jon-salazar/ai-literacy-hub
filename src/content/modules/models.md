@@ -61,6 +61,19 @@ completionMessage: >-
   Escolher o modelo certo é só parte da equação — o próximo módulo mostra como
   um modelo pode ir além de gerar texto e efetivamente executar ações através
   de Tools.
+roleLenses:
+  dev:
+    - "Comece com um modelo mais simples e rápido em tarefas mecânicas e só suba de capacidade quando o resultado não for suficiente."
+    - "Registre qual modelo foi usado em cada fluxo para conseguir comparar qualidade, custo e latência depois."
+  qa:
+    - "Trate o modelo usado como variável de teste: trocar de modelo pode mudar o comportamento mesmo sem mudança de código."
+    - "Mantenha um pequeno conjunto de cenários de referência para comparar modelos antes de uma troca."
+  po:
+    - "Discuta o trade-off entre capacidade, custo e latência com o time em vez de pedir 'o melhor modelo'."
+    - "Defina qual latência e qual custo são aceitáveis para a funcionalidade; isso orienta a escolha do modelo."
+  tl:
+    - "Evite acoplar a arquitetura a um único modelo; facilite a troca por configuração."
+    - "Estabeleça critérios do time para escolher modelos por tipo de tarefa, em vez de decisões caso a caso."
 ---
 
 ## Não existe "o melhor modelo"

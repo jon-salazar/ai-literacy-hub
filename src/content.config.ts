@@ -16,6 +16,21 @@ const labSchema = z.object({
   useTaskContextCanvas: z.boolean().default(false),
 });
 
+const lensTipsSchema = z.array(z.string().min(1)).min(1).max(5);
+
+/**
+ * Lentes por papel (Role Lenses): como o conceito do módulo se aplica a cada
+ * função. Todas as chaves são opcionais; o campo inteiro também é opcional.
+ */
+const roleLensesSchema = z
+  .object({
+    dev: lensTipsSchema.optional(),
+    qa: lensTipsSchema.optional(),
+    po: lensTipsSchema.optional(),
+    tl: lensTipsSchema.optional(),
+  })
+  .strict();
+
 const moduleSchema = z.object({
   id: z.string(),
   slug: z.string(),
@@ -34,6 +49,7 @@ const moduleSchema = z.object({
   lab: labSchema.optional(),
   reflectionPrompts: z.array(z.string()).optional(),
   completionMessage: z.string().optional(),
+  roleLenses: roleLensesSchema.optional(),
 });
 
 const modules = defineCollection({
@@ -67,4 +83,17 @@ const modules = defineCollection({
   }),
 });
 
-export const collections = { modules };
+const radar = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/radar" }),
+  schema: z.object({
+    title: z.string().min(1),
+    date: z.coerce.date(),
+    summary: z.string().min(1),
+    type: z.enum(["conceito", "pratica", "ferramenta", "tendencia"]),
+    tags: z.array(z.string().min(1)).default([]),
+    example: z.boolean().default(false),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { modules, radar };
