@@ -22,4 +22,4 @@ Até a v0.1.0, testes e build só rodavam no `deploy.yml`, depois do push na `ma
 - Todo PR passa por testes, build, verificação de links e acessibilidade antes do merge. Tornar o check obrigatório (proteção de branch) é feito na integração, fora desta frente.
 - O CI baixa o Chromium a cada execução, o que custa cerca de 1 minuto. Aceitamos esse custo em troca de simplicidade, sem cache de navegador.
 - O axe cobre só o estado inicial das páginas (sem progresso no `localStorage`). Interações e estados com progresso ficam para testes futuros.
-- Ainda há exceções conhecidas de a11y (ver `KNOWN_EXCEPTIONS`). Quem for dono de cada componente deve corrigir e remover a entrada.
+- A única exceção encontrada (`aria-progressbar-name` em `ProgressBar.astro`) foi corrigida na integração da v0.2.0; `KNOWN_EXCEPTIONS` está vazia.

@@ -6,14 +6,15 @@ interface Props {
 }
 
 const { phaseId, label = "Progresso" } = Astro.props;
+const labelId = `progress-label-${phaseId}`;
 ---
 
 <div class="progress-bar" data-progress-bar={phaseId}>
   <div class="progress-bar__label">
-    <span>{label}</span>
+    <span id={labelId}>{label}</span>
     <span data-progress-value>0%</span>
   </div>
-  <div class="progress-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="progress-bar__track" role="progressbar" aria-labelledby={labelId} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
     <div class="progress-bar__fill" data-progress-fill style="width: 0%"></div>
   </div>
 </div>
