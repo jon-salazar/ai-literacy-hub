@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatRadarDate, getRadarItems, RADAR_TYPE_LABELS } from "../../lib/radar";
+import { withBase } from "../../lib/paths";
+
+const items = await getRadarItems();
+---
+
+<BaseLayout
+  title="AI Radar"
+  description="Sinais, práticas e conceitos emergentes sobre IA no desenvolvimento de software, separados do currículo durável."
+>
+  <header class="radar-header">
+    <div class="container-narrow">
+      <p class="radar-header__eyebrow">Fora do currículo</p>
+      <h1>AI Radar</h1>
+      <p class="radar-header__description">
+        Sinais, práticas e conceitos emergentes. O currículo cobre o que é durável; o Radar acompanha o que está em
+        movimento e pode mudar rápido. Leia com senso crítico.
+      </p>
+    </div>
+  </header>
+
+  <section class="radar-list" aria-labelledby="radar-list-heading">
+    <div class="container-narrow">
+      <h2 id="radar-list-heading" class="visually-hidden">Itens do radar, do mais recente ao mais antigo</h2>
+      {
+        items.length === 0 ? (
+          <p>Ainda não há itens no radar.</p>
+        ) : (
+          <ol class="radar-list__items">
+            {items.map((item) => (
+              <li>
+                <article class="radar-card">
+                  <p class="radar-card__meta">
+                    <span class="radar-card__type">{RADAR_TYPE_LABELS[item.data.type]}</span>
+                    <time datetime={item.data.date.toISOString().slice(0, 10)}>{formatRadarDate(item.data.date)}</time>
+                    {item.data.example && <span class="radar-card__example">Exemplo</span>}
+                  </p>
+                  <h3 class="radar-card__title">
+                    <a href={withBase(`/radar/${item.id}`)}>{item.data.title}</a>
+                  </h3>
+                  <p class="radar-card__summary">{item.data.summary}</p>
+                  {item.data.tags.length > 0 && (
+                    <ul class="radar-card__tags" aria-label="Tags">
+                      {item.data.tags.map((tag) => (
+                        <li>{tag}</li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              </li>
+            ))}
+          </ol>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .radar-header {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .radar-header__eyebrow {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size-sm);
+  }
+
+  .radar-header__description {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+    margin-bottom: 0;
+  }
+
+  .radar-list {
+    padding-block: var(--space-8);
+  }
+
+  .radar-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .radar-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .radar-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .radar-card__type {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .radar-card__example {
+    border: 1px solid var(--color-warning);
+    color: var(--color-warning);
+    border-radius: var(--radius-sm);
+    padding-inline: var(--space-2);
+  }
+
+  .radar-card__title {
+    margin: var(--space-2) 0;
+    font-size: var(--font-size-lg);
+  }
+
+  .radar-card__summary {
+    margin: 0;
+  }
+
+  .radar-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .radar-card__tags li::before {
+    content: "#";
+  }
+</style>

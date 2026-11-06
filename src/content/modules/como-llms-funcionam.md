@@ -60,6 +60,19 @@ completionMessage: >-
   Saber que um LLM prevê token a token também explica por que ele tem uma
   "memória" limitada dentro de uma conversa. É isso que veremos a seguir, com
   Tokens e Context Window.
+roleLenses:
+  dev:
+    - "Não trate a saída de um LLM como determinística: valide formato e conteúdo antes de usá-la no código."
+    - "Ao gerar código com IA, rode e teste o resultado; texto plausível não é garantia de código correto."
+  qa:
+    - "Execute o mesmo cenário mais de uma vez: respostas diferentes para a mesma entrada são esperadas e pedem critérios de aceite que tolerem variação."
+    - "Prefira verificar propriedades da resposta (formato, informações obrigatórias, ausência de dados proibidos) em vez de comparar texto exato."
+  po:
+    - "Escreva critérios de aceite que considerem variação de resposta, por exemplo 'contém X e não contém Y' em vez de 'responde exatamente Z'."
+    - "Comunique a stakeholders que fluência não é sinônimo de correção: uma resposta bem escrita ainda pode estar errada."
+  tl:
+    - "Projete fluxos que assumem respostas probabilísticas: validação, fallback e revisão onde o erro custa caro."
+    - "Calibre a confiança do time: o modelo prevê continuações prováveis, não consulta uma fonte de verdade."
 ---
 
 ## Previsão de próximo token

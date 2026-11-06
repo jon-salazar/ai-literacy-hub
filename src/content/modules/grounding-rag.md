@@ -60,6 +60,19 @@ completionMessage: >-
   Grounding reduz o risco de invenção, mas não elimina outras limitações do
   modelo. O próximo módulo trata diretamente das Limitações e da alucinação
   que ainda podem acontecer mesmo com boas práticas.
+roleLenses:
+  dev:
+    - "Ao implementar RAG, comece pela qualidade da busca: se o trecho certo não chega ao contexto, o modelo não tem como acertar."
+    - "Peça ao modelo para indicar de qual trecho veio cada afirmação, facilitando a verificação."
+  qa:
+    - "Teste perguntas cuja resposta não está nas fontes: o sistema deve dizer que não sabe em vez de inventar."
+    - "Confira se a resposta é coerente com o documento recuperado, não apenas se parece correta."
+  po:
+    - "Identifique quais fontes são a verdade oficial para cada tema antes de pedir uma funcionalidade baseada em RAG."
+    - "Planeje a manutenção das fontes: documentos desatualizados geram respostas desatualizadas."
+  tl:
+    - "Decida quando RAG é necessário e quando basta incluir o documento diretamente no contexto."
+    - "Defina responsáveis pela curadoria das fontes indexadas; grounding só é tão bom quanto a fonte."
 ---
 
 ## Grounding

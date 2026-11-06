@@ -60,6 +60,19 @@ completionMessage: >-
   Tools são uma das formas de dar ao modelo acesso a informação confiável. A
   próxima é Grounding e RAG — uma forma de trazer conhecimento específico e
   atualizado para dentro da resposta do modelo.
+roleLenses:
+  dev:
+    - "Projete tools com nome, descrição e parâmetros claros; o modelo decide quando chamá-las com base nessa descrição."
+    - "Valide no seu código os parâmetros que o modelo envia para uma tool antes de executar a ação."
+  qa:
+    - "Teste o que acontece quando uma tool falha, demora ou retorna dados inesperados."
+    - "Verifique se a resposta final usa de fato o resultado da tool, e não um valor inventado pelo modelo."
+  po:
+    - "Mapeie tarefas repetitivas do produto que dependem de dados reais; elas são candidatas a virar tools."
+    - "Defina quais ações uma tool pode executar sozinha e quais precisam de confirmação do usuário."
+  tl:
+    - "Trate cada tool como uma superfície de integração: permissões mínimas, logs e limites claros."
+    - "Revise o catálogo de tools do time com o mesmo cuidado de uma API pública."
 ---
 
 ## O que é uma tool

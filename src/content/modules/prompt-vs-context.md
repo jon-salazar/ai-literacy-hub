@@ -65,6 +65,19 @@ completionMessage: >-
   Context Engineering, apresenta um modelo prático — o Task Context Canvas —
   para estruturar esse contexto de forma sistemática antes de delegar uma
   tarefa a um modelo ou agente.
+roleLenses:
+  dev:
+    - "Antes de reescrever o pedido, verifique se o modelo tem o contexto necessário: código existente, padrões do projeto e restrições."
+    - "Separe no seu pedido a instrução (o que fazer) das informações de apoio (o que o modelo precisa saber)."
+  qa:
+    - "Quando a resposta for genérica, investigue primeiro se faltou contexto antes de concluir que o modelo é ruim."
+    - "Ao pedir casos de teste à IA, forneça regras de negócio e critérios de aceite, não apenas 'gere testes para esta tela'."
+  po:
+    - "Histórias de usuário bem escritas já são contexto: objetivo, regras de negócio e critérios de aceite ajudam pessoas e modelos."
+    - "Ao usar IA para refinar o backlog, inclua o porquê da demanda e as restrições conhecidas, não só o título do item."
+  tl:
+    - "Ensine o time a diagnosticar respostas ruins perguntando 'faltou instrução ou faltou contexto?'."
+    - "Mantenha a documentação de arquitetura e decisões acessível; ela é o contexto que todos vão reutilizar."
 ---
 
 ## Prompt

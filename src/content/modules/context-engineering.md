@@ -77,6 +77,19 @@ completionMessage: >-
   mesmo princípio vai aparecer novamente quando falarmos sobre Coding Agents,
   MCP, Skills, Spec-Driven Development, agentes autônomos e Harness
   Engineering.
+roleLenses:
+  dev:
+    - "Preencha um Task Context Canvas antes de delegar uma tarefa a um Coding Agent: objetivo, contexto, artefatos, restrições e critérios de aceite."
+    - "Liste explicitamente o que não pode mudar (contratos, dependências, padrões) para que o agente não precise adivinhar."
+  qa:
+    - "Contribua com a seção Acceptance Criteria do Canvas: critérios verificáveis são o que permite saber se o trabalho terminou."
+    - "Use o Canvas para revisar uma entrega: cada critério de aceite tem uma evidência correspondente?"
+  po:
+    - "Use o Canvas como checklist ao escrever demandas: se um campo fica vazio, alguém (pessoa ou IA) vai precisar adivinhar."
+    - "Indique quais documentos de regras de negócio são a fonte confiável para cada demanda."
+  tl:
+    - "Padronize o Canvas como formato de delegação no time, para pessoas e para agentes."
+    - "Garanta que os artefatos mais usados como contexto (README, ADRs, contratos de API) estejam atualizados e fáceis de encontrar."
 ---
 
 ## Prompt
