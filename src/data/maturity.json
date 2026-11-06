@@ -1,0 +1,11 @@
+{
+  "demo": true,
+  "updatedAt": "2026-11-06",
+  "competencies": [
+    { "id": "context-engineering", "label": "Context Engineering", "score": 4.1 },
+    { "id": "agents", "label": "Agents", "score": 3.0 },
+    { "id": "evals", "label": "Evals", "score": 1.7 },
+    { "id": "sdd", "label": "SDD", "score": 2.2 }
+  ],
+  "nextIntervention": "Dojo — Constraints & Guardrails na prática"
+}
