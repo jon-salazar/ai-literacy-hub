@@ -2,14 +2,15 @@
 // Verificador de links internos do build estático (Node puro, sem dependências).
 //
 // Percorre dist/**/*.html e, para cada href/src/srcset/poster interno, garante que:
-//   1. o caminho começa com o base de publicação (padrão: /ai-literacy-hub/);
+//   1. links absolutos ("/...") começam com o base de publicação (padrão: /ai-literacy-hub/);
+//      links relativos são resolvidos a partir da pasta da página;
 //   2. o alvo existe em dist/ (considerando `x/` → `x/index.html` e `x` → `x/index.html` | `x.html`).
 //
 // Uso: node scripts/check-links.mjs [distDir] [base]
 // Sai com código 1 listando todos os problemas encontrados.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative, resolve, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 
 const DEFAULT_DIST = "dist";
 const DEFAULT_BASE = "/ai-literacy-hub/";
@@ -96,11 +97,27 @@ function resolveTarget(distDir, pathWithinBase) {
 
 /**
  * @param {string} url @param {string} base @param {string} distDir
+ * @param {string} file arquivo HTML onde o link aparece (para resolver links relativos)
  * @returns {string | null} descrição do problema, ou null se o link é válido
  */
-function checkUrl(url, base, distDir) {
+function checkUrl(url, base, distDir, file) {
   const pathname = url.split(/[?#]/)[0];
 
+  // Links relativos (ex.: "assets/x.png" na apresentação, que também precisa funcionar
+  // offline) são resolvidos a partir da pasta da página e só precisam existir em dist/.
+  if (!pathname.startsWith("/")) {
+    if (pathname === "") return null;
+    let decoded;
+    try {
+      decoded = decodeURIComponent(pathname);
+    } catch {
+      return "URL com codificação inválida";
+    }
+    const pageDir = relative(distDir, dirname(file));
+    return resolveTarget(distDir, join(pageDir, decoded)) ? null : "alvo relativo não existe em dist/";
+  }
+
+  // Links absolutos precisam carregar o base (pega um withBase() esquecido).
   if (!pathname.startsWith(base) && `${pathname}/` !== base) {
     return `não começa com o base "${base}"`;
   }
@@ -140,7 +157,7 @@ function main() {
     for (const url of extractUrls(html)) {
       if (!isInternal(url)) continue;
       checked += 1;
-      const reason = checkUrl(url, base, distDir);
+      const reason = checkUrl(url, base, distDir, file);
       if (reason) problems.push({ file: relative(distDir, file), url, reason });
     }
   }
