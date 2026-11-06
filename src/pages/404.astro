@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPhases } from "../lib/curriculum";
+import { withBase } from "../lib/paths";
+
+// GitHub Pages serves 404.html for any missing path (including nested ones),
+// so every link here must be absolute with the base — never relative.
+const firstPhase = getPhases()[0];
+const curriculumHref = firstPhase ? withBase(`/fases/${firstPhase.id}`) : withBase("/");
+---
+
+<BaseLayout
+  title="Página não encontrada"
+  description="A página que você procurou não existe no AI Literacy Hub."
+  noindex
+>
+  <section class="not-found">
+    <div class="container-narrow">
+      <p class="not-found__eyebrow">Erro 404</p>
+      <h1 class="not-found__title">Página não encontrada</h1>
+      <p class="not-found__description">
+        O endereço pode ter mudado ou nunca ter existido. Seu progresso local continua salvo neste navegador.
+      </p>
+      <ul class="not-found__actions" role="list">
+        <li><a class="button" href={withBase("/")}>Voltar ao início</a></li>
+        <li><a class="button button-secondary" href={curriculumHref}>Ver o currículo</a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding: var(--space-12) 0;
+  }
+
+  .not-found__eyebrow {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--space-2);
+  }
+
+  .not-found__title {
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--space-4);
+  }
+
+  .not-found__description {
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-8);
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

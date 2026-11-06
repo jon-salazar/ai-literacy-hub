@@ -1,16 +1,18 @@
 # Apresentação — AI Literacy Hub POC
 
-Artefato HTML estático e independente, criado conforme [docs/presentation-brief.md](../docs/presentation-brief.md). Não faz parte da aplicação do Hub e não depende dela para funcionar — apenas para a demonstração ao vivo (slide 6).
+A apresentação foi movida para [`public/apresentacao/`](../public/apresentacao/index.html) e é publicada junto com o site em
+<https://jon-salazar.github.io/ai-literacy-hub/apresentacao/>. A decisão está registrada em
+[docs/adr/003-estrutura-site.md](../docs/adr/003-estrutura-site.md).
+
+Este diretório existe apenas para não quebrar referências antigas (por exemplo, em `docs/presentation-brief.md`).
 
 ## Como abrir
 
-Dê duplo clique em [index.html](index.html), ou abra pelo navegador:
-
-```
-file:///caminho/para/presentation/index.html
-```
-
-Nenhum `npm install`, servidor ou conexão com a internet é necessário.
+- **Online:** acesse `/ai-literacy-hub/apresentacao/` no site publicado, ou em `npm run preview` /
+  `npm run dev` (`http://localhost:4321/ai-literacy-hub/apresentacao/`).
+- **Offline:** dê duplo clique em [`public/apresentacao/index.html`](../public/apresentacao/index.html). O arquivo é
+  autocontido (CSS e JS inline, imagens em `assets/` com caminhos relativos) e não precisa de servidor, `npm install`
+  nem internet.
 
 ## Atalhos de teclado
 
@@ -25,26 +27,24 @@ Nenhum `npm install`, servidor ou conexão com a internet é necessário.
 
 Também há botões `‹` `›` no canto inferior direito, para navegação por clique/toque.
 
-## Configurar a URL da POC
+## URL da POC (slide 6)
 
-O slide 6 ("Vamos experimentar como participante") tem um botão para abrir a POC real. A URL é configurada no início do bloco `<script>` de `index.html`:
+O botão "Abrir POC" é configurado em `PRESENTATION_CONFIG.pocUrl`, no início do `<script>` de
+`public/apresentacao/index.html`:
 
-```js
-const PRESENTATION_CONFIG = {
-  pocUrl: "http://localhost:4321",
-};
-```
-
-- Aponta por padrão para o servidor local (`npm run dev` na pasta do projeto).
-- Se a POC estiver publicada em outra URL, troque o valor.
-- Se `pocUrl` estiver vazio (`""`), o botão é substituído por um aviso de configuração pendente — a apresentação nunca quebra por causa disso.
+- servida por HTTP(S) (site publicado ou preview local), aponta para o próprio Hub (`../`);
+- aberta via `file://`, aponta para `http://localhost:4321/ai-literacy-hub/` (`npm run dev`);
+- com valor `""`, o botão vira um aviso de configuração pendente — a apresentação nunca quebra por isso.
 
 ## Assets
 
-`assets/*.png` são screenshots reais da POC, gerados a partir do build de produção (`astro build` + `astro preview`), não mockups. Se o conteúdo da aplicação mudar significativamente, os assets podem ser regenerados repetindo esse processo e recapturando as telas de: Home, Fase 1, módulo Context Engineering (seções Demo e Lab) e página de Progresso.
+`public/apresentacao/assets/*.png` são screenshots reais da POC (build de produção), não mockups. Se a aplicação mudar
+significativamente, recapture: Fase 1, módulo Context Engineering (Demo e Lab) e Progresso.
 
 ## Observações
 
-- Os dados de "Maturity Map" que aparecem no screenshot de progresso são explicitamente marcados como demonstrativos pela própria aplicação — não são dados de participantes reais.
-- O slide 11 ("Validado vs. hipótese") separa deliberadamente fatos técnicos verificados de hipóteses de aprendizagem ainda não testadas com pessoas reais.
-- Este diretório não deve ser referenciado por nenhuma rota da aplicação Astro (`src/pages/`) — a independência entre POC e apresentação é intencional.
+- Os dados de "Maturity Map" no screenshot de progresso são marcados como demonstrativos pela própria aplicação.
+- O slide 11 ("Validado vs. hipótese") separa fatos técnicos verificados de hipóteses de aprendizagem ainda não
+  testadas.
+- A apresentação é um arquivo estático em `public/`: nenhuma rota de `src/pages/` depende dela, e ela não depende do
+  build do Astro.
