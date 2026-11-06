@@ -1,0 +1,141 @@
+---
+interface CanvasField {
+  label: string;
+  prompt: string;
+}
+
+interface Props {
+  fields?: CanvasField[];
+}
+
+const defaultFields: CanvasField[] = [
+  { label: "Objective", prompt: "O que precisa ser alcançado?" },
+  { label: "Context", prompt: "O que a IA precisa saber sobre o problema e o ambiente?" },
+  { label: "Artifacts", prompt: "Quais fontes devem ser consultadas?" },
+  { label: "Constraints", prompt: "O que precisa ou não pode acontecer?" },
+  { label: "Acceptance Criteria", prompt: "Que evidências demonstram que o trabalho está correto?" },
+];
+
+const { fields = defaultFields } = Astro.props;
+
+const template = fields.map((field) => `### ${field.label}\n\n...\n`).join("\n");
+---
+
+<div class="canvas">
+  <dl class="canvas__grid">
+    {
+      fields.map((field) => (
+        <div class="canvas__field">
+          <dt>{field.label}</dt>
+          <dd>{field.prompt}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <div class="canvas__template">
+    <div class="canvas__template-header">
+      <span>Template copiável</span>
+      <button type="button" data-canvas-copy>Copiar template</button>
+    </div>
+    <pre data-canvas-template>{template}</pre>
+    <p class="canvas__copy-feedback" data-canvas-feedback role="status" hidden>Template copiado.</p>
+  </div>
+</div>
+
+<style>
+  .canvas {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .canvas__grid {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .canvas__field {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .canvas__field dt {
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+  }
+
+  .canvas__field dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .canvas__template {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .canvas__template-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface-raised);
+    font-size: var(--font-size-sm);
+  }
+
+  .canvas__template-header button {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .canvas__template-header button:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .canvas__template pre {
+    margin: 0;
+    padding: var(--space-4);
+    white-space: pre-wrap;
+    font-size: var(--font-size-sm);
+  }
+
+  .canvas__copy-feedback {
+    margin: 0;
+    padding: 0 var(--space-4) var(--space-3);
+    color: var(--color-success);
+    font-size: var(--font-size-sm);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-canvas-copy]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const container = button.closest(".canvas__template");
+      const pre = container?.querySelector("[data-canvas-template]");
+      const feedback = container?.querySelector<HTMLElement>("[data-canvas-feedback]");
+      const text = pre?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        if (feedback) {
+          feedback.hidden = false;
+          setTimeout(() => {
+            feedback.hidden = true;
+          }, 2500);
+        }
+      } catch {
+        // Clipboard API indisponível; o participante ainda pode selecionar o texto manualmente.
+      }
+    });
+  });
+</script>

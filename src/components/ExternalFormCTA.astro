@@ -1,0 +1,55 @@
+---
+import type { FormConfig } from "../lib/forms";
+import { isFormConfigured } from "../lib/forms";
+
+interface Props {
+  config: FormConfig | undefined;
+  label: string;
+}
+
+const { config, label } = Astro.props;
+const configured = isFormConfigured(config);
+const dataAttrs = configured
+  ? { "data-form-url": config!.url, "data-form-prefill-field": config!.prefillParticipantIdField ?? "" }
+  : {};
+---
+
+{
+  configured ? (
+    <a class="button form-cta" href={config!.url} target="_blank" rel="noopener noreferrer" {...dataAttrs}>
+      {label}
+    </a>
+  ) : (
+    <p class="form-cta form-cta--pending" role="status">
+      Formulário ainda não configurado para este módulo. Configure a URL em <code>src/data/forms.json</code>.
+    </p>
+  )
+}
+
+<style>
+  .form-cta--pending {
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin: 0;
+  }
+
+  .form-cta--pending code {
+    color: var(--color-text);
+  }
+</style>
+
+<script>
+  import { getOrCreateParticipantId } from "../lib/progress";
+  import { buildFormUrl } from "../lib/forms";
+
+  document.querySelectorAll<HTMLAnchorElement>("[data-form-url]").forEach((link) => {
+    const participantId = getOrCreateParticipantId();
+    const url = link.dataset.formUrl;
+    const field = link.dataset.formPrefillField;
+    if (!url) return;
+    link.href = buildFormUrl({ url, embed: false, prefillParticipantIdField: field || undefined }, participantId);
+  });
+</script>

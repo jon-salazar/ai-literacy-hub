@@ -1,0 +1,188 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LearningSection from "../../components/LearningSection.astro";
+import LearningObjectiveList from "../../components/LearningObjectiveList.astro";
+import TaskContextCanvas from "../../components/TaskContextCanvas.astro";
+import FormEmbed from "../../components/FormEmbed.astro";
+import ModuleNavigation from "../../components/ModuleNavigation.astro";
+import ModuleCompletionButton from "../../components/ModuleCompletionButton.astro";
+import StatusBadge from "../../components/StatusBadge.astro";
+import { getAllModules } from "../../lib/modules";
+import { getPhase } from "../../lib/curriculum";
+import { getFormConfig } from "../../lib/forms";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const modules = await getAllModules();
+  return modules
+    .filter((entry) => entry.data.status === "published")
+    .map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const phase = getPhase(data.phase);
+const formsKey = data.forms ?? data.slug;
+const baselineForm = getFormConfig(formsKey, "baseline");
+const evidenceForm = getFormConfig(formsKey, "evidence");
+const reflectionForm = getFormConfig(formsKey, "reflection");
+---
+
+<BaseLayout title={data.title} description={data.description}>
+  <header class="module-header">
+    <div class="container-narrow">
+      {phase && <p class="module-header__eyebrow">{phase.title}</p>}
+      <div class="module-header__title-row">
+        <h1>{data.title}</h1>
+        <StatusBadge status={data.status} />
+      </div>
+      <p class="module-header__description">{data.description}</p>
+      <p class="module-header__duration">Duração estimada: {data.duration}</p>
+    </div>
+  </header>
+
+  <LearningSection id="introducao" title="Introdução" eyebrow="Comece por aqui">
+    <p>{data.introduction}</p>
+  </LearningSection>
+
+  <LearningSection id="objetivos" title="Objetivos de aprendizagem">
+    <LearningObjectiveList objectives={data.objectives} />
+  </LearningSection>
+
+  <LearningSection id="baseline" title="Avaliação inicial" eyebrow="Baseline">
+    <p>Antes de seguir, registre sua percepção inicial sobre este tema.</p>
+    <FormEmbed config={baselineForm} title={`Formulário de baseline — ${data.title}`} />
+  </LearningSection>
+
+  <LearningSection id="conceito" title="Conceito">
+    <p class="module-key-message">{data.keyMessage}</p>
+    <Content />
+  </LearningSection>
+
+  {
+    data.demo && (
+      <LearningSection id="demo" title="Demo">
+        <div class="demo-comparison">
+          <div class="demo-comparison__version">
+            <h3>{data.demo.versionALabel}</h3>
+            <blockquote>{data.demo.versionAText}</blockquote>
+          </div>
+          <div class="demo-comparison__version">
+            <h3>{data.demo.versionBLabel}</h3>
+            <p class="demo-comparison__text">{data.demo.versionBText}</p>
+          </div>
+        </div>
+        <p>{data.demo.explanation}</p>
+      </LearningSection>
+    )
+  }
+
+  {
+    data.lab && (
+      <LearningSection id="lab" title="Lab" eyebrow="Prática">
+        <p>{data.lab.scenario}</p>
+        <p>{data.lab.instructions}</p>
+        {data.lab.useTaskContextCanvas && <TaskContextCanvas />}
+      </LearningSection>
+    )
+  }
+
+  <LearningSection id="evidencia" title="Evidência">
+    <p>Registre sua evidência de aplicação prática enviando o formulário abaixo.</p>
+    <FormEmbed config={evidenceForm} title={`Formulário de evidência — ${data.title}`} />
+  </LearningSection>
+
+  {
+    data.reflectionPrompts && (
+      <LearningSection id="reflexao" title="Reflexão">
+        <ul>
+          {data.reflectionPrompts.map((prompt) => (
+            <li>{prompt}</li>
+          ))}
+        </ul>
+        <FormEmbed config={reflectionForm} title={`Formulário de reflexão — ${data.title}`} />
+      </LearningSection>
+    )
+  }
+
+  <LearningSection id="conclusao" title="Conclusão">
+    <p>{data.completionMessage}</p>
+    <ModuleCompletionButton moduleId={data.id} />
+  </LearningSection>
+
+  {phase && <div class="container-narrow"><ModuleNavigation phaseId={phase.id} phaseTitle={phase.title} /></div>}
+</BaseLayout>
+
+<script>
+  import { markModuleStarted } from "../../lib/progress";
+
+  const moduleId = document.querySelector<HTMLElement>("[data-completion-widget]")?.dataset.completionWidget;
+  if (moduleId) markModuleStarted(moduleId);
+</script>
+
+<style>
+  .module-header {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .module-header__eyebrow {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size-sm);
+  }
+
+  .module-header__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .module-header__title-row h1 {
+    margin: 0;
+  }
+
+  .module-header__description {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+  }
+
+  .module-header__duration {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .module-key-message {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .demo-comparison {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .demo-comparison__version {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .demo-comparison__version h3 {
+    margin-top: 0;
+  }
+
+  .demo-comparison__text {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    white-space: pre-line;
+  }
+</style>

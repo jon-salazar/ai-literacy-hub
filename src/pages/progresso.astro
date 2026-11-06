@@ -1,0 +1,131 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Meu progresso">
+  <section class="progress-page">
+    <div class="container-narrow">
+      <h1>Meu progresso</h1>
+      <p class="progress-page__intro">
+        Este progresso é armazenado apenas neste navegador (localStorage), de forma pseudônima. Não há login nem
+        sincronização entre dispositivos.
+      </p>
+
+      <div class="progress-page__card" data-progress-summary>
+        <p>Carregando progresso...</p>
+      </div>
+
+      <h2>Maturity Map (conceitual)</h2>
+      <p>
+        Esta seção ilustra, com <strong>dados demonstrativos</strong> (não coletados de participantes reais), como os
+        sinais capturados pelos formulários de baseline, evidência e reflexão alimentariam futuramente um mapa de
+        maturidade por competência.
+      </p>
+      <div class="demo-data-badge">Dados demonstrativos</div>
+      <table class="maturity-table">
+        <caption class="visually-hidden">Exemplo demonstrativo de maturidade por competência</caption>
+        <thead>
+          <tr>
+            <th scope="col">Competência</th>
+            <th scope="col">Maturidade (1–5)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Context Engineering</th><td>4.1</td></tr>
+          <tr><th scope="row">Agents</th><td>3.0</td></tr>
+          <tr><th scope="row">Evals</th><td>1.7</td></tr>
+          <tr><th scope="row">SDD</th><td>2.2</td></tr>
+        </tbody>
+      </table>
+      <p class="maturity-table__note">
+        Próxima intervenção sugerida (exemplo): <strong>Dojo — Constraints &amp; Guardrails na prática</strong>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { getProgress } from "../lib/progress";
+
+  const container = document.querySelector<HTMLElement>("[data-progress-summary]");
+  if (container) {
+    const progress = getProgress();
+    if (!progress) {
+      container.textContent = "Não foi possível acessar o armazenamento local deste navegador.";
+    } else {
+      const entries = Object.entries(progress.modules);
+      const completed = entries.filter(([, m]) => m.completedAt).length;
+      container.innerHTML = "";
+
+      const idEl = document.createElement("p");
+      idEl.innerHTML = `<strong>Participant ID:</strong> ${progress.participantId}`;
+      container.appendChild(idEl);
+
+      const summaryEl = document.createElement("p");
+      summaryEl.innerHTML = `<strong>Módulos iniciados:</strong> ${entries.length} · <strong>Concluídos:</strong> ${completed}`;
+      container.appendChild(summaryEl);
+
+      if (entries.length === 0) {
+        const empty = document.createElement("p");
+        empty.textContent = "Você ainda não iniciou nenhum módulo.";
+        container.appendChild(empty);
+      } else {
+        const list = document.createElement("ul");
+        for (const [moduleId, moduleProgress] of entries) {
+          const item = document.createElement("li");
+          const status = moduleProgress.completedAt ? "Concluído" : "Em andamento";
+          item.textContent = `${moduleId} — ${status}`;
+          list.appendChild(item);
+        }
+        container.appendChild(list);
+      }
+    }
+  }
+</script>
+
+<style>
+  .progress-page {
+    padding-block: var(--space-8);
+  }
+
+  .progress-page__intro {
+    color: var(--color-text-muted);
+  }
+
+  .progress-page__card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-block: var(--space-6);
+  }
+
+  .demo-data-badge {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+    color: var(--color-warning);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+  }
+
+  .maturity-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--space-3);
+  }
+
+  .maturity-table th,
+  .maturity-table td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .maturity-table__note {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+</style>

@@ -1,0 +1,28 @@
+{
+  "phases": [
+    {
+      "id": "foundations",
+      "order": 1,
+      "title": "Fundamentos & Uso Consciente",
+      "description": "Entenda como modelos de IA funcionam e aprenda a utilizá-los com contexto, intenção e senso crítico.",
+      "transformation": "Usuário casual → usuário consciente e competente",
+      "status": "active"
+    },
+    {
+      "id": "agentic-ai",
+      "order": 2,
+      "title": "Agentic AI & Orquestração",
+      "description": "Aprenda a fazer IA executar trabalho utilizando ferramentas, workflows e agentes.",
+      "transformation": "Usuário → operador de agentes e workflows",
+      "status": "coming-soon"
+    },
+    {
+      "id": "ai-native-engineering",
+      "order": 3,
+      "title": "AI-Native Software Engineering",
+      "description": "Aprenda a projetar processos de engenharia onde humanos e agentes trabalham juntos.",
+      "transformation": "Operador → designer de workflows AI-native",
+      "status": "coming-soon"
+    }
+  ]
+}

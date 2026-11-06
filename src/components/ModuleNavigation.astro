@@ -1,0 +1,18 @@
+---
+interface Props {
+  phaseId: string;
+  phaseTitle: string;
+}
+
+const { phaseId, phaseTitle } = Astro.props;
+---
+
+<nav class="module-nav" aria-label="Navegação do módulo">
+  <a class="button button-secondary" href={`/fases/${phaseId}`}>← Voltar para {phaseTitle}</a>
+</nav>
+
+<style>
+  .module-nav {
+    padding-block: var(--space-6);
+  }
+</style>

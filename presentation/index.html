@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Literacy Hub — Apresentação da POC</title>
+<style>
+  :root {
+    --color-bg: #0f1115;
+    --color-surface: #171a21;
+    --color-surface-raised: #1f232c;
+    --color-border: #2c313c;
+    --color-text: #e8eaed;
+    --color-text-muted: #a3aab5;
+    --color-primary: #7cc4ff;
+    --color-primary-strong: #4fa8f0;
+    --color-success: #7ddc9a;
+    --color-warning: #f0c96a;
+    --color-danger: #f0847a;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    height: 100%;
+  }
+
+  img { max-width: 100%; display: block; }
+
+  a { color: var(--color-primary); }
+
+  h1, h2, h3, p, ul, ol, dl, dd { margin: 0; }
+
+  .presentation {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: 6vh 8vw;
+    overflow-y: auto;
+  }
+
+  .slide.active { display: flex; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .slide { animation: fade-in 0.25s ease; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: clamp(0.75rem, 1vw, 0.95rem);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 var(--space-2);
+  }
+
+  h1.slide-title {
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    max-width: 24ch;
+  }
+
+  h2.slide-title {
+    font-size: clamp(1.6rem, 3.6vw, 2.6rem);
+    line-height: 1.15;
+    max-width: 26ch;
+  }
+
+  .slide-subtitle {
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
+    color: var(--color-text-muted);
+    max-width: 62ch;
+  }
+
+  .lede {
+    font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+    max-width: 60ch;
+  }
+
+  .quote {
+    font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+    font-weight: 600;
+    border-left: 3px solid var(--color-primary);
+    padding-left: var(--space-6);
+    max-width: 58ch;
+    line-height: 1.35;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+  }
+
+  .card h3 {
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    margin-bottom: var(--space-2);
+  }
+
+  .card p, .card li {
+    color: var(--color-text-muted);
+    font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+  }
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+    font-weight: 600;
+  }
+
+  .flow .step {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: var(--space-2) var(--space-4);
+    white-space: nowrap;
+  }
+
+  .flow .arrow {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+
+  .badge-success { color: var(--color-success); border-color: var(--color-success); background: rgba(125, 220, 154, 0.12); }
+  .badge-warning { color: var(--color-warning); border-color: var(--color-warning); background: rgba(240, 201, 106, 0.12); }
+  .badge-muted { color: var(--color-text-muted); border-color: var(--color-border); background: var(--color-surface-raised); }
+
+  .screenshot-frame {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    max-height: 46vh;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .screenshot-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .compare .card.validated { border-color: var(--color-success); }
+  .compare .card.hypothesis { border-color: var(--color-warning); }
+
+  .compare h3.validated-title { color: var(--color-success); }
+  .compare h3.hypothesis-title { color: var(--color-warning); }
+
+  .list-check li, .list-question li {
+    padding-left: var(--space-4);
+    position: relative;
+  }
+
+  .list-check li::before { content: "✓"; position: absolute; left: 0; color: var(--color-success); }
+  .list-question li::before { content: "?"; position: absolute; left: 0; color: var(--color-warning); }
+
+  ul.plain { list-style: none; padding: 0; display: grid; gap: var(--space-2); }
+
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.4em;
+    font-size: 0.9em;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    background: var(--color-primary-strong);
+    color: #0b0d11;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+  }
+
+  .cta:hover { background: var(--color-primary); }
+
+  .cta-pending {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    border: 1px dashed var(--color-border);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    display: inline-block;
+  }
+
+  .closing-line {
+    font-size: clamp(1.3rem, 2.6vw, 2.1rem);
+    font-weight: 700;
+    max-width: 32ch;
+  }
+
+  .footnote {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Controls */
+  .controls {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    z-index: 50;
+  }
+
+  .controls button {
+    font-family: inherit;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .controls button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  .progress-indicator {
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+  }
+
+  .progress-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--color-primary-strong);
+    z-index: 60;
+    transition: width 0.2s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress-track { transition: none; }
+  }
+
+  /* Overview grid (Escape) */
+  .overview-panel {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 11, 14, 0.96);
+    z-index: 100;
+    display: none;
+    padding: 6vh 6vw;
+    overflow-y: auto;
+  }
+
+  .overview-panel.open { display: block; }
+
+  .overview-panel h2 {
+    font-size: 1.4rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .overview-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-align: left;
+    color: var(--color-text);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .overview-item:hover, .overview-item:focus-visible { border-color: var(--color-primary); outline: none; }
+
+  .overview-item .num { color: var(--color-text-muted); font-size: 0.8rem; }
+  .overview-item .title { font-weight: 700; margin-top: var(--space-1); }
+
+  /* Speaker notes panel */
+  .notes-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-4) 8vw;
+    display: none;
+    z-index: 90;
+    max-height: 30vh;
+    overflow-y: auto;
+  }
+
+  .notes-panel.open { display: block; }
+
+  .notes-panel .label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--color-warning);
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+  }
+
+  .hint {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    z-index: 50;
+  }
+
+  @media (max-width: 780px) {
+    .two-col, .compare, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    .slide { padding: 5vh 6vw; gap: var(--space-4); }
+    .hint { display: none; }
+  }
+
+  @media print {
+    .controls, .progress-indicator, .progress-track, .overview-panel, .notes-panel, .hint { display: none !important; }
+    html, body { height: auto; }
+    .presentation { height: auto; overflow: visible; }
+    .slide {
+      display: flex !important;
+      position: static;
+      page-break-after: always;
+      height: 100vh;
+      animation: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-track" id="progress-track" style="width: 0%"></div>
+<div class="hint">← → espaço · Esc visão geral · N notas</div>
+
+<main class="presentation" id="presentation">
+
+  <section class="slide" id="slide-1" data-title="AI Literacy Hub" data-notes="Abertura. Uma frase, pausa, deixe o título respirar antes de seguir para o desafio.">
+    <p class="eyebrow">AI Literacy Hub</p>
+    <h1 class="slide-title">Uma POC de aprendizagem async-first para evolução da maturidade em IA</h1>
+    <p class="slide-subtitle">Letramento em Inteligência Artificial para profissionais do ciclo de desenvolvimento de software — Devs, QAs, POs, Tech Leads e demais papéis.</p>
+  </section>
+
+  <section class="slide" id="slide-2" data-title="O desafio" data-notes="Enfatize a heterogeneidade do público e a ausência de instrutor dedicado. Esse é o problema real que motiva o design async-first.">
+    <p class="eyebrow">O desafio</p>
+    <h2 class="slide-title">Como escalar letramento em IA sem depender de um instrutor full-time?</h2>
+    <div class="grid grid-2" style="max-width: 70ch;">
+      <div class="card">
+        <h3>Público heterogêneo</h3>
+        <p>Devs, QAs, POs, Tech Leads, arquitetos, dados, gestores — com níveis de familiaridade com IA muito diferentes entre si.</p>
+      </div>
+      <div class="card">
+        <h3>Sem instrutor dedicado</h3>
+        <p>Não há disponibilidade full-time para ministrar aulas, acompanhar cada participante ou produzir conteúdo constantemente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-3" data-title="A hipótese" data-notes="Apresente o modelo async-first + sync-on-demand. O loop Learn-Practice-Evidence-Signals é o coração pedagógico da proposta.">
+    <p class="eyebrow">A hipótese</p>
+    <h2 class="slide-title">Async-first + Learning by doing</h2>
+    <p class="lede">A maior parte da experiência precisa funcionar sem instrutor. Momentos síncronos (Dojos, Workshops, Clinics) entram apenas onde os sinais indicarem necessidade.</p>
+    <div class="flow">
+      <span class="step">Learn</span><span class="arrow">→</span>
+      <span class="step">Practice</span><span class="arrow">→</span>
+      <span class="step">Evidence</span><span class="arrow">→</span>
+      <span class="step">Signals</span>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-4" data-title="A visão" data-notes="Deixe claro que apenas a Fase 1 está implementada nesta POC. Fases 2 e 3 existem como currículo coming-soon; Fase 4 (contexto organizacional) está fora de escopo.">
+    <p class="eyebrow">A visão</p>
+    <h2 class="slide-title">Entender → Delegar → Projetar</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <span class="badge badge-success">Implementada nesta POC</span>
+        <h3 style="margin-top: var(--space-3);">1. Fundamentos &amp; Uso Consciente</h3>
+        <p>Usuário casual → usuário consciente e competente. 11 módulos completos.</p>
+      </div>
+      <div class="card">
+        <span class="badge badge-muted">Currículo futuro</span>
+        <h3 style="margin-top: var(--space-3);">2. Agentic AI &amp; Orquestração</h3>
+        <p>Usuário → operador de agentes e workflows.</p>
+      </div>
+      <div class="card">
+        <span class="badge badge-muted">Currículo futuro</span>
+        <h3 style="margin-top: var(--space-3);">3. AI-Native Software Engineering</h3>
+        <p>Operador → designer de workflows AI-native.</p>
+      </div>
+    </div>
+    <p class="footnote">Uma quarta fase, de contexto organizacional específico, está fora do escopo desta POC.</p>
+  </section>
+
+  <section class="slide" id="slide-5" data-title="O vertical slice" data-notes="Context Engineering é o módulo completo escolhido como vertical slice da arquitetura. Leia a key message em voz alta.">
+    <p class="eyebrow">O vertical slice</p>
+    <h2 class="slide-title">Context Engineering</h2>
+    <div class="two-col">
+      <div style="display:grid; gap: var(--space-4);">
+        <p class="quote">O prompt descreve o que queremos. O contexto fornece aquilo que a IA precisa saber para executar bem.</p>
+        <div class="flow" style="font-size: clamp(0.8rem, 1.2vw, 1rem);">
+          <span class="step">Baseline</span><span class="arrow">→</span>
+          <span class="step">Conteúdo</span><span class="arrow">→</span>
+          <span class="step">Demo</span><span class="arrow">→</span>
+          <span class="step">Lab</span><span class="arrow">→</span>
+          <span class="step">Evidence</span><span class="arrow">→</span>
+          <span class="step">Reflection</span>
+        </div>
+      </div>
+      <div class="screenshot-frame">
+        <img src="assets/context-engineering.png" alt="Demonstração real da POC: comparação entre uma instrução isolada e a mesma tarefa estruturada com o Task Context Canvas." />
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-6" data-title="Demo ao vivo" data-notes="Ponto de transição: pause a apresentação HTML aqui e abra a POC real no navegador. Demonstração de 3–5 minutos como participante. Depois volte a este HTML e siga para o slide 7.">
+    <p class="eyebrow">Demonstração</p>
+    <h2 class="slide-title">Vamos experimentar como participante</h2>
+    <div class="two-col">
+      <div style="display:grid; gap: var(--space-4);">
+        <p class="lede">A partir daqui, a apresentação dá lugar à aplicação real por alguns minutos.</p>
+        <ul class="plain list-check" style="max-width: 42ch;">
+          <li>Abrir a Home e a Fase 1</li>
+          <li>Entrar no módulo Context Engineering</li>
+          <li>Preencher o Task Context Canvas no Lab</li>
+          <li>Marcar o módulo como concluído</li>
+        </ul>
+        <div id="poc-cta-slot"></div>
+      </div>
+      <div class="screenshot-frame">
+        <img src="assets/lab.png" alt="Lab do módulo Context Engineering na POC real, com o Task Context Canvas." />
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-7" data-title="O que medimos" data-notes="Explique os três sinais e enfatize que Application pesa mais que Completion. Isso é a métrica que realmente importa para o programa.">
+    <p class="eyebrow">O que estamos medindo</p>
+    <h2 class="slide-title">Perception, Knowledge, Application</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>Perception</h3>
+        <p>"Eu acho que sei." Capturado no formulário de baseline, antes do conteúdo.</p>
+      </div>
+      <div class="card">
+        <h3>Knowledge</h3>
+        <p>"Eu consigo reconhecer ou explicar." Capturado na reflexão, após o módulo.</p>
+      </div>
+      <div class="card">
+        <h3>Application</h3>
+        <p>"Eu consigo fazer." Capturado na evidência do Lab — o Task Context Canvas preenchido de verdade.</p>
+      </div>
+    </div>
+    <p class="quote" style="border-color: var(--color-success);">Application &gt; Completion</p>
+  </section>
+
+  <section class="slide" id="slide-8" data-title="Learning Loop" data-notes="A tela de progresso já existe na POC e já rotula claramente os dados do Maturity Map como demonstrativos — isso é importante para a credibilidade da demo.">
+    <p class="eyebrow">Learning Loop</p>
+    <h2 class="slide-title">Os sinais direcionam o programa, não só um dashboard</h2>
+    <div class="two-col">
+      <div class="flow" style="flex-direction: column; align-items: flex-start; font-size: clamp(0.85rem, 1.3vw, 1.05rem);">
+        <span class="step">Learning</span>
+        <span class="arrow">↓</span>
+        <span class="step">Evidence</span>
+        <span class="arrow">↓</span>
+        <span class="step">Signals</span>
+        <span class="arrow">↓</span>
+        <span class="step">Gap identification</span>
+        <span class="arrow">↓</span>
+        <span class="step">Dojo / Workshop / Clinic</span>
+        <span class="arrow">↓</span>
+        <span class="step">New learning</span>
+      </div>
+      <div class="screenshot-frame">
+        <img src="assets/progress.png" alt="Página de progresso real da POC, com Maturity Map explicitamente marcado como dados demonstrativos." />
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-9" data-title="Arquitetura" data-notes="Todos os números aqui são reais, verificados no momento da apresentação (astro check, astro build, vitest run). Não são projeções.">
+    <p class="eyebrow">Arquitetura da POC</p>
+    <h2 class="slide-title">Markdown + JSON → Hub estático → localStorage + Forms</h2>
+    <div class="two-col">
+      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="card"><h3>11 / 11</h3><p>módulos da Fase 1 publicados</p></div>
+        <div class="card"><h3>16</h3><p>páginas estáticas geradas no build</p></div>
+        <div class="card"><h3>0</h3><p>erros de TypeScript (astro check)</p></div>
+        <div class="card"><h3>12 / 12</h3><p>testes automatizados passando (Vitest)</p></div>
+      </div>
+      <div class="screenshot-frame">
+        <img src="assets/phase-1.png" alt="Página real da Fase 1 na POC, listando os módulos gerados a partir de conteúdo." />
+      </div>
+    </div>
+    <p class="footnote">Sem backend, sem SSR, sem banco de dados, sem autenticação. Adicionar um módulo exige apenas um arquivo de conteúdo — nenhuma página nova.</p>
+  </section>
+
+  <section class="slide" id="slide-10" data-title="Como construímos" data-notes="Esta é a segunda tese da POC: o próprio Hub foi construído com as práticas que ensina. Mencione o papel do humano (intenção, contexto, decisões) versus o agente (execução).">
+    <p class="eyebrow">Dogfooding</p>
+    <h2 class="slide-title">Construímos o produto com as práticas que ele ensina</h2>
+    <div class="flow" style="font-size: clamp(0.8rem, 1.3vw, 1.05rem);">
+      <span class="step">Intent</span><span class="arrow">→</span>
+      <span class="step">Vision</span><span class="arrow">→</span>
+      <span class="step">Spec</span><span class="arrow">→</span>
+      <span class="step">Plan</span><span class="arrow">→</span>
+      <span class="step">Tasks</span><span class="arrow">→</span>
+      <span class="step">Implementation</span><span class="arrow">→</span>
+      <span class="step">Validation</span>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Humano</h3>
+        <p>Intenção, contexto, arquitetura, decisões, restrições, validação.</p>
+      </div>
+      <div class="card">
+        <h3>Agente</h3>
+        <p>Exploração, implementação, execução de tarefas, testes, iteração.</p>
+      </div>
+    </div>
+    <p class="quote">Não eliminamos engenharia para ganhar velocidade. Usamos engenharia para delegar melhor.</p>
+  </section>
+
+  <section class="slide" id="slide-11" data-title="Validado vs. hipótese" data-notes="Slide mais importante para credibilidade. Seja explícito: o que existe é infraestrutura e conteúdo verificados; o que falta é aprendizagem real acontecendo com pessoas.">
+    <p class="eyebrow">Honestidade sobre o estágio</p>
+    <h2 class="slide-title">O que foi validado vs. o que ainda é hipótese</h2>
+    <div class="compare">
+      <div class="card validated">
+        <h3 class="validated-title">Validado</h3>
+        <ul class="plain list-check">
+          <li>Build estático conclui sem erro; 0 erros de TypeScript</li>
+          <li>Progresso local persiste após reload (testado no navegador)</li>
+          <li>11 módulos da Fase 1 renderizam com conteúdo completo</li>
+          <li>Ausência de Form configurado não quebra a aplicação</li>
+          <li>Schema barra conteúdo publicado inválido no build</li>
+        </ul>
+      </div>
+      <div class="card hypothesis">
+        <h3 class="hypothesis-title">Ainda é hipótese</h3>
+        <ul class="plain list-question">
+          <li>Participantes reais conseguem concluir a jornada sozinhos</li>
+          <li>Os sinais coletados realmente direcionam intervenções síncronas</li>
+          <li>O modelo se sustenta ao escalar para as Fases 2 e 3</li>
+          <li>Os Google Forms reais ainda não foram publicados — só documentados</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-12" data-title="Próximo experimento" data-notes="Fechamento. A frase final é a mensagem que a audiência deve sair repetindo.">
+    <p class="eyebrow">Próximo experimento</p>
+    <h2 class="slide-title">Pilotar com um grupo pequeno e aprender com dados reais</h2>
+    <ul class="plain list-check" style="max-width: 48ch;">
+      <li>Publicar os Google Forms reais (roteiro já pronto em <span class="mono">docs/forms/foundations/</span>)</li>
+      <li>Convidar um grupo piloto pequeno e heterogêneo</li>
+      <li>Observar Perception, Knowledge e Application de verdade</li>
+      <li>Usar os gaps reais para decidir o primeiro Dojo/Workshop/Clinic</li>
+    </ul>
+    <p class="closing-line">O próximo passo não é construir mais plataforma. É gerar evidência de aprendizagem.</p>
+  </section>
+
+</main>
+
+<div class="controls">
+  <span class="progress-indicator" id="progress-indicator">01 / 12</span>
+  <button type="button" id="btn-prev" aria-label="Slide anterior">‹</button>
+  <button type="button" id="btn-next" aria-label="Próximo slide">›</button>
+</div>
+
+<div class="overview-panel" id="overview-panel" aria-hidden="true">
+  <h2>Visão geral — clique para ir a um slide</h2>
+  <div class="overview-grid" id="overview-grid"></div>
+</div>
+
+<div class="notes-panel" id="notes-panel">
+  <p class="label">Notas do apresentador</p>
+  <p id="notes-content"></p>
+</div>
+
+<script>
+  // Configuração da URL da POC real, usada pelo CTA do slide de demo.
+  // Deixe pocUrl como "" para esconder o botão caso a POC não esteja acessível.
+  const PRESENTATION_CONFIG = {
+    pocUrl: "http://localhost:4321",
+  };
+
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+    var total = slides.length;
+    var current = 0;
+
+    var progressIndicator = document.getElementById("progress-indicator");
+    var progressTrack = document.getElementById("progress-track");
+    var overviewPanel = document.getElementById("overview-panel");
+    var overviewGrid = document.getElementById("overview-grid");
+    var notesPanel = document.getElementById("notes-panel");
+    var notesContent = document.getElementById("notes-content");
+
+    function renderCta() {
+      var slot = document.getElementById("poc-cta-slot");
+      if (!slot) return;
+      if (PRESENTATION_CONFIG.pocUrl && PRESENTATION_CONFIG.pocUrl.trim().length > 0) {
+        var a = document.createElement("a");
+        a.className = "cta";
+        a.href = PRESENTATION_CONFIG.pocUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "Abrir POC →";
+        slot.appendChild(a);
+      } else {
+        var p = document.createElement("p");
+        p.className = "cta-pending";
+        p.textContent = "URL da POC não configurada. Edite PRESENTATION_CONFIG.pocUrl em index.html.";
+        slot.appendChild(p);
+      }
+    }
+
+    function buildOverview() {
+      slides.forEach(function (slide, index) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "overview-item";
+        btn.innerHTML =
+          '<div class="num">' + String(index + 1).padStart(2, "0") + " / " + total + "</div>" +
+          '<div class="title">' + (slide.getAttribute("data-title") || "Slide") + "</div>";
+        btn.addEventListener("click", function () {
+          goTo(index);
+          closeOverview();
+        });
+        overviewGrid.appendChild(btn);
+      });
+    }
+
+    function update() {
+      slides.forEach(function (slide, index) {
+        slide.classList.toggle("active", index === current);
+      });
+      progressIndicator.textContent = String(current + 1).padStart(2, "0") + " / " + total;
+      progressTrack.style.width = ((current + 1) / total) * 100 + "%";
+      notesContent.textContent = slides[current].getAttribute("data-notes") || "";
+      history.replaceState(null, "", "#" + slides[current].id);
+    }
+
+    function goTo(index) {
+      current = Math.min(Math.max(index, 0), total - 1);
+      update();
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    function openOverview() {
+      overviewPanel.classList.add("open");
+      overviewPanel.setAttribute("aria-hidden", "false");
+    }
+    function closeOverview() {
+      overviewPanel.classList.remove("open");
+      overviewPanel.setAttribute("aria-hidden", "true");
+    }
+    function toggleOverview() {
+      if (overviewPanel.classList.contains("open")) closeOverview();
+      else openOverview();
+    }
+
+    function toggleNotes() {
+      notesPanel.classList.toggle("open");
+    }
+
+    document.getElementById("btn-prev").addEventListener("click", prev);
+    document.getElementById("btn-next").addEventListener("click", next);
+
+    document.addEventListener("keydown", function (e) {
+      if (overviewPanel.classList.contains("open")) {
+        if (e.key === "Escape") { closeOverview(); e.preventDefault(); }
+        return;
+      }
+      switch (e.key) {
+        case "ArrowRight":
+        case " ":
+        case "PageDown":
+          next(); e.preventDefault(); break;
+        case "ArrowLeft":
+        case "PageUp":
+          prev(); e.preventDefault(); break;
+        case "Home":
+          goTo(0); e.preventDefault(); break;
+        case "End":
+          goTo(total - 1); e.preventDefault(); break;
+        case "Escape":
+          toggleOverview(); e.preventDefault(); break;
+        case "n":
+        case "N":
+          toggleNotes(); e.preventDefault(); break;
+      }
+    });
+
+    // Deep link support: open directly on a given slide via #slide-N.
+    function initFromHash() {
+      var hash = window.location.hash.replace("#", "");
+      var index = slides.findIndex(function (s) { return s.id === hash; });
+      current = index >= 0 ? index : 0;
+    }
+
+    buildOverview();
+    renderCta();
+    initFromHash();
+    update();
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+---
+const navItems = [
+  { href: "/", label: "Início" },
+  { href: "/fases/foundations", label: "Currículo" },
+  { href: "/progresso", label: "Meu progresso" },
+  { href: "/sobre", label: "Como funciona" },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="/">AI Literacy Hub</a>
+    <nav aria-label="Navegação principal">
+      <ul class="site-header__nav">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={item.href} aria-current={currentPath === item.href ? "page" : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+  }
+
+  .site-header__brand {
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .site-header__nav {
+    display: flex;
+    list-style: none;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  .site-header__nav a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .site-header__nav a:hover,
+  .site-header__nav a[aria-current="page"] {
+    color: var(--color-primary);
+  }
+</style>

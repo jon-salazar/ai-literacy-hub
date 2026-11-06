@@ -1,0 +1,77 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PhaseCard from "../components/PhaseCard.astro";
+import { getPhases } from "../lib/curriculum";
+import { getModulesByPhase, countPublished } from "../lib/modules";
+
+const phases = getPhases();
+const moduleCounts = await Promise.all(
+  phases.map(async (phase) => countPublished(await getModulesByPhase(phase.id)))
+);
+---
+
+<BaseLayout title="Início">
+  <section class="hero">
+    <div class="container">
+      <p class="hero__eyebrow">AI Literacy Hub</p>
+      <h1 class="hero__title">Entenda → Delegue → Projete</h1>
+      <p class="hero__subtitle">
+        Letramento em Inteligência Artificial para profissionais do ciclo de desenvolvimento de software: Devs, QAs,
+        POs e TLs aprendendo uma base comum de conceitos, com prática aplicada em vez de apenas conteúdo assistido.
+      </p>
+    </div>
+  </section>
+
+  <section class="phases">
+    <div class="container">
+      <h2 class="phases__title">A jornada</h2>
+      <div class="phases__grid">
+        {phases.map((phase, index) => <PhaseCard phase={phase} moduleCount={moduleCounts[index]} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-12);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero__eyebrow {
+    margin: 0 0 var(--space-2);
+    color: var(--color-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-sm);
+  }
+
+  .hero__title {
+    margin: 0 0 var(--space-4);
+    font-size: var(--font-size-2xl);
+    max-width: 20ch;
+  }
+
+  .hero__subtitle {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+  }
+
+  .phases {
+    padding-block: var(--space-12);
+  }
+
+  .phases__title {
+    margin: 0 0 var(--space-6);
+    font-size: var(--font-size-xl);
+  }
+
+  .phases__grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+</style>

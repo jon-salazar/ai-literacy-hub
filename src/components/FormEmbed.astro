@@ -1,0 +1,58 @@
+---
+import type { FormConfig } from "../lib/forms";
+import { isFormConfigured } from "../lib/forms";
+import ExternalFormCTA from "./ExternalFormCTA.astro";
+
+interface Props {
+  config: FormConfig | undefined;
+  title: string;
+}
+
+const { config, title } = Astro.props;
+const configured = isFormConfigured(config);
+const shouldEmbed = configured && config!.embed;
+---
+
+{
+  shouldEmbed ? (
+    <div class="form-embed">
+      <iframe
+        title={title}
+        data-form-embed
+        data-form-url={config!.url}
+        data-form-prefill-field={config!.prefillParticipantIdField ?? ""}
+        loading="lazy"
+      />
+    </div>
+  ) : (
+    <ExternalFormCTA config={config} label={title} />
+  )
+}
+
+<style>
+  .form-embed {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .form-embed iframe {
+    width: 100%;
+    min-height: 480px;
+    border: 0;
+    display: block;
+  }
+</style>
+
+<script>
+  import { getOrCreateParticipantId } from "../lib/progress";
+  import { buildFormUrl } from "../lib/forms";
+
+  document.querySelectorAll<HTMLIFrameElement>("[data-form-embed]").forEach((iframe) => {
+    const participantId = getOrCreateParticipantId();
+    const url = iframe.dataset.formUrl;
+    const field = iframe.dataset.formPrefillField;
+    if (!url) return;
+    iframe.src = buildFormUrl({ url, embed: true, prefillParticipantIdField: field || undefined }, participantId);
+  });
+</script>

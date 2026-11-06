@@ -1,0 +1,128 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ModuleCard from "../../components/ModuleCard.astro";
+import StatusBadge from "../../components/StatusBadge.astro";
+import ProgressBar from "../../components/ProgressBar.astro";
+import { getPhases } from "../../lib/curriculum";
+import { getModulesByPhase } from "../../lib/modules";
+
+export async function getStaticPaths() {
+  const phases = getPhases();
+  return Promise.all(
+    phases.map(async (phase) => ({
+      params: { phase: phase.id },
+      props: { phase, modules: await getModulesByPhase(phase.id) },
+    }))
+  );
+}
+
+const { phase, modules } = Astro.props;
+const moduleIds = modules.filter((m) => m.data.status === "published").map((m) => m.data.id);
+---
+
+<BaseLayout title={phase.title} description={phase.description}>
+  <section class="phase-header">
+    <div class="container-narrow">
+      <p class="phase-header__eyebrow">Fase {phase.order}</p>
+      <div class="phase-header__title-row">
+        <h1>{phase.title}</h1>
+        <StatusBadge status={phase.status} />
+      </div>
+      <p class="phase-header__description">{phase.description}</p>
+      <p class="phase-header__transformation">
+        <strong>Transformação esperada:</strong> {phase.transformation}
+      </p>
+      {moduleIds.length > 0 && <ProgressBar phaseId={phase.id} label="Seu progresso nesta fase" />}
+    </div>
+  </section>
+
+  <section class="phase-modules">
+    <div class="container-narrow">
+      <h2>Módulos</h2>
+      {
+        modules.length === 0 ? (
+          <p class="phase-modules__empty">Currículo desta fase ainda não foi publicado.</p>
+        ) : (
+          <div class="phase-modules__list">
+            {modules.map((moduleEntry) => (
+              <ModuleCard module={moduleEntry} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .phase-header {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .phase-header__eyebrow {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size-sm);
+  }
+
+  .phase-header__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .phase-header__title-row h1 {
+    margin: 0;
+  }
+
+  .phase-header__description {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+  }
+
+  .phase-header__transformation {
+    margin: 0;
+  }
+
+  .phase-modules {
+    padding-block: var(--space-8);
+  }
+
+  .phase-modules__list {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .phase-modules__empty {
+    color: var(--color-text-muted);
+  }
+</style>
+
+<script is:inline type="application/json" id="phase-module-ids" set:html={JSON.stringify(moduleIds)} />
+
+<script>
+  import { getProgress, calculatePhaseProgress } from "../../lib/progress";
+
+  const dataEl = document.getElementById("phase-module-ids");
+  const bar = document.querySelector<HTMLElement>("[data-progress-bar]");
+  if (bar && dataEl) {
+    const moduleIds: string[] = JSON.parse(dataEl.textContent ?? "[]");
+    const progress = getProgress();
+    const percentage = calculatePhaseProgress(progress, moduleIds);
+    const fill = bar.querySelector<HTMLElement>("[data-progress-fill]");
+    const value = bar.querySelector<HTMLElement>("[data-progress-value]");
+    const track = bar.querySelector<HTMLElement>('[role="progressbar"]');
+    if (fill) fill.style.width = `${percentage}%`;
+    if (value) value.textContent = `${percentage}%`;
+    if (track) track.setAttribute("aria-valuenow", String(percentage));
+  }
+</script>

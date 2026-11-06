@@ -1,0 +1,52 @@
+---
+interface Props {
+  /** DOM id used by client-side scripts to update the bar for a given phase. */
+  phaseId: string;
+  label?: string;
+}
+
+const { phaseId, label = "Progresso" } = Astro.props;
+---
+
+<div class="progress-bar" data-progress-bar={phaseId}>
+  <div class="progress-bar__label">
+    <span>{label}</span>
+    <span data-progress-value>0%</span>
+  </div>
+  <div class="progress-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="progress-bar__fill" data-progress-fill style="width: 0%"></div>
+  </div>
+</div>
+
+<style>
+  .progress-bar {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .progress-bar__label {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .progress-bar__track {
+    height: 8px;
+    background: var(--color-surface-raised);
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .progress-bar__fill {
+    height: 100%;
+    background: var(--color-primary-strong);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .progress-bar__fill {
+      transition: width 0.3s ease;
+    }
+  }
+</style>

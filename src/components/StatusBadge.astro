@@ -1,0 +1,52 @@
+---
+interface Props {
+  status: "active" | "published" | "coming-soon" | "draft";
+}
+
+const { status } = Astro.props;
+
+const labels: Record<Props["status"], string> = {
+  active: "Disponível",
+  published: "Disponível",
+  draft: "Rascunho",
+  "coming-soon": "Em breve",
+};
+
+const tone: Record<Props["status"], string> = {
+  active: "success",
+  published: "success",
+  draft: "warning",
+  "coming-soon": "muted",
+};
+---
+
+<span class={`status-badge status-badge--${tone[status]}`}>{labels[status]}</span>
+
+<style>
+  .status-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
+
+  .status-badge--success {
+    color: var(--color-success);
+    border-color: var(--color-success);
+    background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  }
+
+  .status-badge--warning {
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+    background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  }
+
+  .status-badge--muted {
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+    background: var(--color-surface-raised);
+  }
+</style>

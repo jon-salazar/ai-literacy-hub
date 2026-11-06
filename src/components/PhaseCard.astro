@@ -1,0 +1,69 @@
+---
+import StatusBadge from "./StatusBadge.astro";
+import type { Phase } from "../lib/curriculum";
+
+interface Props {
+  phase: Phase;
+  moduleCount?: number;
+}
+
+const { phase, moduleCount } = Astro.props;
+const href = `/fases/${phase.id}`;
+---
+
+<a class="phase-card" href={href}>
+  <div class="phase-card__header">
+    <span class="phase-card__number">Fase {phase.order}</span>
+    <StatusBadge status={phase.status} />
+  </div>
+  <h3 class="phase-card__title">{phase.title}</h3>
+  <p class="phase-card__description">{phase.description}</p>
+  {moduleCount !== undefined && <p class="phase-card__meta">{moduleCount} módulo(s) disponível(is)</p>}
+</a>
+
+<style>
+  .phase-card {
+    display: block;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .phase-card:hover {
+    border-color: var(--color-primary);
+  }
+
+  .phase-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+  }
+
+  .phase-card__number {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .phase-card__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--font-size-xl);
+  }
+
+  .phase-card__description {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-muted);
+  }
+
+  .phase-card__meta {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+</style>

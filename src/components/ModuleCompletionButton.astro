@@ -1,0 +1,53 @@
+---
+interface Props {
+  moduleId: string;
+}
+
+const { moduleId } = Astro.props;
+---
+
+<div class="completion" data-completion-widget={moduleId}>
+  <button type="button" class="button" data-completion-button data-module-id={moduleId}>
+    Marcar módulo como concluído
+  </button>
+  <p class="completion__done" data-completion-done role="status" hidden>
+    ✔ Módulo concluído. Seu progresso foi salvo neste navegador.
+  </p>
+</div>
+
+<style>
+  .completion {
+    padding-block: var(--space-4);
+  }
+
+  .completion__done {
+    margin: 0;
+    color: var(--color-success);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  import { markModuleCompleted, isModuleCompleted, getProgress } from "../lib/progress";
+
+  document.querySelectorAll<HTMLElement>("[data-completion-widget]").forEach((widget) => {
+    const moduleId = widget.dataset.completionWidget;
+    if (!moduleId) return;
+    const button = widget.querySelector<HTMLButtonElement>("[data-completion-button]");
+    const done = widget.querySelector<HTMLElement>("[data-completion-done]");
+    if (!button || !done) return;
+
+    const syncState = () => {
+      const alreadyDone = isModuleCompleted(getProgress(), moduleId);
+      button.hidden = alreadyDone;
+      done.hidden = !alreadyDone;
+    };
+
+    button.addEventListener("click", () => {
+      markModuleCompleted(moduleId);
+      syncState();
+    });
+
+    syncState();
+  });
+</script>

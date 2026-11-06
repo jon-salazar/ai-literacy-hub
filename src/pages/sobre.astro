@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LearningSection from "../components/LearningSection.astro";
+---
+
+<BaseLayout
+  title="Como funciona"
+  description="O que é o AI Literacy Hub, o que ele não é e como a experiência de aprendizagem foi construída."
+>
+  <header class="about-header">
+    <div class="container-narrow">
+      <p class="about-header__eyebrow">O experimento</p>
+      <h1>Aprender fazendo, com evidências.</h1>
+      <p class="about-header__description">
+        O AI Literacy Hub também é uma demonstração de AI-Native Software Engineering: intenção explícita, especificação,
+        tarefas, implementação, validação e revisão.
+      </p>
+    </div>
+  </header>
+
+  <LearningSection id="o-que-e" title="O que é o Hub">
+    <p>
+      Uma aplicação estática e content-first. O conteúdo vive em Markdown, a jornada em JSON e o progresso no
+      <code>localStorage</code> do seu navegador. Quando chega a hora de registrar uma evidência, você sai para um
+      Google Form configurado pelo mantenedor.
+    </p>
+    <p>
+      Cada módulo segue o mesmo ciclo: baseline, conceito, demo, lab, evidência, reflexão e conclusão. A ideia é
+      comparar sua percepção antes e depois, sempre a partir de uma prática concreta.
+    </p>
+  </LearningSection>
+
+  <LearningSection id="o-que-nao-e" title="O que não é">
+    <p>
+      Não é LMS, plataforma social, sistema de autenticação ou avaliação automática. A POC prova uma experiência de
+      aprendizagem, não uma infraestrutura de treinamento.
+    </p>
+  </LearningSection>
+
+  <LearningSection id="privacidade" title="Seus dados">
+    <ul>
+      <li>
+        O navegador guarda apenas um <code>participantId</code> aleatório e pseudônimo, os módulos iniciados e
+        concluídos e seus horários.
+      </li>
+      <li>Nada é enviado a um servidor do Hub: não há backend, login nem analytics.</li>
+      <li>
+        O que você escreve nos formulários vai para o Google Forms. Não inclua dados pessoais, de clientes ou
+        informações confidenciais nas respostas.
+      </li>
+    </ul>
+  </LearningSection>
+</BaseLayout>
+
+<style>
+  .about-header {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .about-header__eyebrow {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size-sm);
+  }
+
+  .about-header__description {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-lg);
+  }
+</style>
