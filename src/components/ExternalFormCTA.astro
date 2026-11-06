@@ -1,27 +1,39 @@
 ---
 import type { FormConfig } from "../lib/forms";
-import { isFormConfigured } from "../lib/forms";
+import { buildFormUrl, formDataAttributes, isFormConfigured } from "../lib/forms";
 
 interface Props {
   config: FormConfig | undefined;
   label: string;
+  /** Id of the element that describes the link (e.g. the privacy notice). */
+  describedBy?: string;
 }
 
-const { config, label } = Astro.props;
+const { config, label, describedBy } = Astro.props;
 const configured = isFormConfigured(config);
-const dataAttrs = configured
-  ? { "data-form-url": config!.url, "data-form-prefill-field": config!.prefillParticipantIdField ?? "" }
-  : {};
+// Without JavaScript the link still carries the module id; the client script
+// adds the participant id.
+const fallbackHref = configured ? buildFormUrl(config!, null) : "";
 ---
 
 {
   configured ? (
-    <a class="button form-cta" href={config!.url} target="_blank" rel="noopener noreferrer" {...dataAttrs}>
+    <a
+      class="button form-cta"
+      href={fallbackHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-describedby={describedBy}
+      data-form-link
+      {...formDataAttributes(config!)}
+    >
       {label}
+      <span class="visually-hidden"> (abre em nova aba)</span>
     </a>
   ) : (
     <p class="form-cta form-cta--pending" role="status">
-      Formulário ainda não configurado para este módulo. Configure a URL em <code>src/data/forms.json</code>.
+      <strong>Formulário pendente:</strong> ainda não configurado. Configure a URL em <code>defaults</code> de{" "}
+      <code>src/data/forms.json</code>.
     </p>
   )
 }
@@ -43,13 +55,10 @@ const dataAttrs = configured
 
 <script>
   import { getOrCreateParticipantId } from "../lib/progress";
-  import { buildFormUrl } from "../lib/forms";
+  import { buildFormUrl, formUrlInputFromDataset } from "../lib/forms";
 
-  document.querySelectorAll<HTMLAnchorElement>("[data-form-url]").forEach((link) => {
-    const participantId = getOrCreateParticipantId();
-    const url = link.dataset.formUrl;
-    const field = link.dataset.formPrefillField;
-    if (!url) return;
-    link.href = buildFormUrl({ url, embed: false, prefillParticipantIdField: field || undefined }, participantId);
+  document.querySelectorAll<HTMLAnchorElement>("a[data-form-link]").forEach((link) => {
+    const url = buildFormUrl(formUrlInputFromDataset(link.dataset), getOrCreateParticipantId());
+    if (url) link.href = url;
   });
 </script>
