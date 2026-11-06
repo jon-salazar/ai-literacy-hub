@@ -7,7 +7,8 @@ Documentação completa do processo (Intent → Spec → Plan → Tasks → Impl
 - [docs/vision.md](docs/vision.md) — visão e North Star.
 - [docs/architecture.md](docs/architecture.md) — arquitetura e decisões registradas.
 - [docs/learning-model.md](docs/learning-model.md) — modelo pedagógico.
-- [specs/001-learning-hub-poc/](specs/001-learning-hub-poc/) — spec, plan, tasks e acceptance.
+- [specs/001-learning-hub-poc/](specs/001-learning-hub-poc/) e [specs/002-agentic-ai/](specs/002-agentic-ai/) — spec, plan, tasks e acceptance.
+- [docs/adr/](docs/adr/) — decisões de arquitetura (ADRs) a partir da v0.2.0.
 - [docs/product_vision.md](docs/product_vision.md) e [docs/seed.md](docs/seed.md) — briefing original do programa completo.
 
 ## Arquitetura em uma frase
@@ -18,16 +19,17 @@ Content (Markdown) + Configuration (JSON) → Static Build (Astro) → Browser (
 
 Sem backend, sem SSR, sem banco de dados, sem autenticação.
 
-## Estado atual
+## Estado atual (v0.2.0)
 
+- Publicado em https://jon-salazar.github.io/ai-literacy-hub/.
 - Home com a trilha de três fases.
-- Fase 1 (Fundamentos & Uso Consciente) com os onze módulos publicados.
-- Fases 2 e 3 visíveis como "Em breve".
-- Módulo dinâmico com introdução, objetivos, baseline, conceito, demo, lab, evidência, reflexão e conclusão.
-- Progresso local e `participantId` pseudônimo em `localStorage` (`/progresso`).
-- Página "Como funciona" (`/sobre`) explicando o experimento e o uso de dados.
-- Google Forms configuráveis em `src/data/forms.json` para os 11 módulos; sem URLs reais, a interface informa a pendência.
-- Roteiros de perguntas por módulo em `docs/forms/foundations/` para a criação posterior dos Forms.
+- Fase 1 (Fundamentos & Uso Consciente) com os onze módulos publicados, todos com dicas por papel (Dev, QA, PO, Tech Lead).
+- Fase 2 (Agentic AI & Orquestração) ativa: módulo MCP publicado e os demais da trilha como "Em breve". Fase 3 como "Em breve".
+- Módulo dinâmico com introdução, objetivos, baseline, conceito, demo, "Na sua função", lab, evidência, reflexão e conclusão.
+- Progresso local e `participantId` pseudônimo em `localStorage`; em `/progresso` é possível exportar, importar e recomeçar o progresso. Maturity Map lido de `src/data/maturity.json` (ainda com dados demonstrativos).
+- Três Google Forms genéricos (baseline, evidência, reflexão) para todos os módulos, com `participantId` e `module_id` pré-preenchidos. Sem URLs reais configuradas, a interface informa a pendência.
+- AI Radar (`/radar`): sinais e práticas emergentes, separados do currículo (itens atuais são exemplos).
+- Página "Como funciona" (`/sobre`), página 404 própria e apresentação da POC em `/apresentacao/`.
 
 Não há backend, SSR, autenticação, analytics real ou sincronização entre dispositivos.
 
@@ -63,23 +65,31 @@ Gera o site estático em `dist/`.
 ```bash
 npm run check   # astro check — TypeScript e schema de conteúdo
 npm run build   # astro check + build estático
-npm test        # vitest — funções puras (progress, forms)
+npm test        # vitest — funções puras (progress, forms, paths, maturity, radar)
+npm run check:links  # verifica links internos do dist/ (após o build)
+npm run test:e2e     # acessibilidade (axe + Playwright) sobre o dist/ (após o build)
 ```
+
+O CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) roda tudo isso em cada pull request para a `main`; o merge exige o check verde.
 
 ## Estrutura
 
 ```
 src/
-  content.config.ts     # schema (Zod) da collection de módulos
+  content.config.ts     # schemas (Zod) das collections modules e radar
   content/modules/*.md  # conteúdo educacional (um arquivo por módulo)
+  content/radar/*.md    # itens do AI Radar
   data/curriculum.json  # fases da jornada (id, título, descrição, status)
-  data/forms.json       # configuração dos Google Forms por módulo
+  data/forms.json       # 3 Google Forms padrão + overrides opcionais por módulo
+  data/maturity.json    # dados do Maturity Map
   lib/
     progress.ts          # único ponto de acesso a localStorage
     forms.ts             # construção pura de URL de Form com prefill
     paths.ts             # withBase(): prefixa links internos com o base do deploy
     curriculum.ts         # leitura tipada de curriculum.json
     modules.ts            # leitura tipada da collection de módulos
+    maturity.ts           # validação do maturity.json
+    radar.ts, radar-sort.ts  # leitura e ordenação do AI Radar
   components/            # componentes genéricos de apresentação
   layouts/BaseLayout.astro
   pages/
@@ -88,30 +98,40 @@ src/
     modulos/[slug].astro
     progresso.astro
     sobre.astro
+    radar/index.astro, radar/[slug].astro
+    404.astro
+public/apresentacao/     # apresentação da POC (funciona também offline)
 tests/                   # vitest, funções puras
+tests/e2e/               # Playwright + axe (acessibilidade)
+scripts/check-links.mjs  # verificador de links internos
 ```
 
 ## Configuração dos Google Forms
 
-Edite `src/data/forms.json`. Cada módulo (chave = `id` do módulo, ou o valor de `forms` no frontmatter se diferente) pode configurar três formulários: `baseline`, `evidence`, `reflection`.
-
-Antes de criar os Forms reais, consulte [docs/forms/foundations/](docs/forms/foundations/) — um arquivo de referência por módulo da Fase 1 com os campos conceituais que cada um dos três formulários deve ter.
+São só **3 Google Forms** para todos os módulos: `baseline`, `evidence` e `reflection`. Cada link sai com o `participantId` e o `module_id` pré-preenchidos, então as respostas de todos os módulos caem na mesma planilha por etapa e são filtradas pela coluna `module_id`. Passo a passo para criar os Forms e obter os campos `entry.*`: [docs/forms/foundations/README.md](docs/forms/foundations/README.md).
 
 ```json
 {
-  "context-engineering": {
+  "defaults": {
     "baseline": {
-      "url": "https://forms.gle/SEU_FORM_AQUI",
+      "url": "https://docs.google.com/forms/d/e/SEU_FORM/viewform",
       "embed": false,
-      "prefillParticipantIdField": "entry.123456789"
-    }
+      "prefillParticipantIdField": "entry.111111111",
+      "prefillModuleIdField": "entry.222222222"
+    },
+    "evidence": { "...": "..." },
+    "reflection": { "...": "..." }
+  },
+  "overrides": {
+    "context-engineering": { "evidence": { "url": "https://.../form-dedicado" } }
   }
 }
 ```
 
-- `url` vazio ou ausente → a seção mostra "configuração pendente" sem quebrar a página.
-- `embed: true` → o formulário é exibido em iframe; `embed: false` → CTA com link externo (nova aba).
-- `prefillParticipantIdField` → nome do campo `entry.xxxxx` do Google Forms (visível inspecionando o link de preenchimento prévio do Form) usado para enviar o `participantId` como parâmetro.
+- `url` vazio → a seção mostra "configuração pendente" sem quebrar a página.
+- `embed: true` → formulário em iframe; `embed: false` → link externo (nova aba).
+- `overrides` (opcional) → troca campos de uma etapa para um módulo específico, sem mudar código.
+- Módulos novos usam os `defaults` automaticamente; não precisam de entrada no JSON.
 
 Nenhuma URL de Form fica hardcoded em componentes.
 
@@ -121,7 +141,13 @@ Nenhuma URL de Form fica hardcoded em componentes.
 2. Defina `phase` com o `id` de uma fase existente em `src/data/curriculum.json`.
 3. Rode `npm run build`. A rota `/modulos/<slug>` é gerada automaticamente e o módulo aparece na página da fase correspondente.
 
-Não é necessário criar nenhuma página Astro nem editar componentes.
+Opcional: `roleLenses` (`dev`, `qa`, `po`, `tl`, cada um com 1 a 5 dicas) para a seção "Na sua função".
+
+Não é necessário criar nenhuma página Astro, editar componentes nem configurar formulários.
+
+## Como adicionar um item ao AI Radar
+
+Crie `src/content/radar/<slug>.md` com `title`, `date`, `summary`, `type` (`conceito` | `pratica` | `ferramenta` | `tendencia`) e `tags`. Use `draft: true` para tirar um item do ar sem apagá-lo.
 
 ## Como adicionar uma fase
 
@@ -137,7 +163,8 @@ Como é um *project site*, o Hub vive no subcaminho `/ai-literacy-hub/` (`base` 
 
 ## Limitações da POC
 
-- Google Forms embutidos via iframe dependem da configuração de compartilhamento do Form (alguns formulários corporativos podem bloquear embed — nesse caso use `embed: false`).
-- Progresso é local ao navegador; não há sincronização entre dispositivos nem exportação de dados.
-- Todos os 11 módulos da Fase 1 (Fundamentos & Uso Consciente) estão completos e publicados. As Fases 2 (Agentic AI & Orquestração) e 3 (AI-Native Software Engineering) existem apenas como currículo `coming-soon`, sem módulos de conteúdo.
-- O Maturity Map em `/progresso` é ilustrativo — não há coleta ou agregação real de dados de participantes nesta POC.
+- Google Forms embutidos via iframe dependem da configuração de compartilhamento do Form (alguns formulários podem bloquear embed — nesse caso use `embed: false`).
+- Progresso é local ao navegador; para trocar de dispositivo, exporte e importe o arquivo de progresso em `/progresso`.
+- Fase 2 tem 1 de 14 módulos publicados e a Fase 3 ainda não tem módulos. O progresso de uma fase considera apenas os módulos publicados.
+- O Maturity Map em `/progresso` usa dados demonstrativos; a agregação de dados reais está prevista para a v0.3.
+- Os itens atuais do AI Radar são exemplos ilustrativos.

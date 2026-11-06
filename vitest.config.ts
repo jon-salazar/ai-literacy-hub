@@ -4,6 +4,7 @@ import { configDefaults, defineConfig } from "vitest/config";
 // e não devem ser coletados aqui.
 export default defineConfig({
   test: {
-    exclude: [...configDefaults.exclude, "tests/e2e/**"],
+    include: ["tests/**/*.test.ts"],
+    exclude: [...configDefaults.exclude, "tests/e2e/**", ".claude/**"],
   },
 });

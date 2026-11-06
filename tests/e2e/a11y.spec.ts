@@ -11,6 +11,9 @@ const ROUTES: readonly { name: string; path: string }[] = [
   { name: "progresso", path: "progresso/" },
   { name: "fase foundations", path: "fases/foundations/" },
   { name: "módulo context-engineering", path: "modulos/context-engineering/" },
+  { name: "fase agentic-ai", path: "fases/agentic-ai/" },
+  { name: "módulo mcp", path: "modulos/mcp/" },
+  { name: "ai radar", path: "radar/" },
 ];
 
 /** Regras WCAG 2.0/2.1 nível A e AA, mais as boas práticas do axe. */
@@ -33,17 +36,9 @@ interface KnownException {
  * qualquer violação nova continua falhando. Remova a entrada quando a correção
  * for mergeada (o teste anota exceções que deixaram de ocorrer).
  */
-const KNOWN_EXCEPTIONS: readonly KnownException[] = [
-  {
-    // src/components/ProgressBar.astro: o elemento com role="progressbar" não tem
-    // nome acessível. Correção sugerida: aria-labelledby apontando para o <span>
-    // do rótulo (ou aria-label={label}). Fora do escopo da frente B (CI).
-    rule: "aria-progressbar-name",
-    route: "fases/foundations/",
-    target: ".progress-bar__track",
-    reason: "ProgressBar sem nome acessível (componente de outra frente)",
-  },
-];
+// Nenhuma exceção conhecida no momento. Adicione aqui (regra + rota + seletor,
+// com comentário) apenas violações aceitas temporariamente.
+const KNOWN_EXCEPTIONS: readonly KnownException[] = [];
 
 function isKnownException(routePath: string, rule: string, target: string): boolean {
   return KNOWN_EXCEPTIONS.some(
