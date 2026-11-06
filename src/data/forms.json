@@ -1,189 +1,23 @@
 {
-  "ia-genai-llms": {
+  "defaults": {
     "baseline": {
       "url": "",
       "embed": false,
-      "prefillParticipantIdField": ""
+      "prefillParticipantIdField": "",
+      "prefillModuleIdField": ""
     },
     "evidence": {
       "url": "",
       "embed": false,
-      "prefillParticipantIdField": ""
+      "prefillParticipantIdField": "",
+      "prefillModuleIdField": ""
     },
     "reflection": {
       "url": "",
       "embed": false,
-      "prefillParticipantIdField": ""
+      "prefillParticipantIdField": "",
+      "prefillModuleIdField": ""
     }
   },
-  "como-llms-funcionam": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "tokens-context-window": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "prompt-vs-context": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "context-engineering": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "models": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "tools": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "grounding-rag": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "limitacoes-alucinacao": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "seguranca": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  },
-  "human-in-the-loop": {
-    "baseline": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "evidence": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    },
-    "reflection": {
-      "url": "",
-      "embed": false,
-      "prefillParticipantIdField": ""
-    }
-  }
+  "overrides": {}
 }
